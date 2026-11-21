@@ -40,16 +40,41 @@ jobs:
         run: gradle wrapper --gradle-version 8.9 --no-daemon
       - name: Build release APK
         run: ./gradlew assembleRelease --no-daemon
+      - name: Sign APK
+        env:
+          APK_KEYSTORE_BASE64: ${{ secrets.APK_KEYSTORE_BASE64 }}
+          APK_KEYSTORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          APK_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
+        run: |
+          build_tools=""
+          for candidate in "${ANDROID_SDK_ROOT:-}" "${ANDROID_HOME:-}"; do
+            for dir in "$candidate"/build-tools/*; do
+              if [ -x "$dir/apksigner" ]; then build_tools="$dir"; break; fi
+            done
+            if [ -n "$build_tools" ]; then break; fi
+          done
+          if [ -z "$build_tools" ]; then echo "apksigner not found"; exit 1; fi
+          printf '%s' "$APK_KEYSTORE_BASE64" | base64 -d > release.keystore
+          "$build_tools/zipalign" -f 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/primalspace-aligned.apk
+          "$build_tools/apksigner" sign \
+            --ks release.keystore \
+            --ks-key-alias "$APK_KEY_ALIAS" \
+            --ks-pass "pass:$APK_KEYSTORE_PASSWORD" \
+            --key-pass "pass:$APK_KEYSTORE_PASSWORD" \
+            --out app/build/outputs/apk/release/primalspace.apk \
+            app/build/outputs/apk/release/primalspace-aligned.apk
+          "$build_tools/apksigner" verify --print-certs app/build/outputs/apk/release/primalspace.apk
+          rm -f release.keystore
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: primalspace-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/release/primalspace.apk
           if-no-files-found: error
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/apk/release/primalspace.apk
           tag_name: v1.0.0-${{ github.run_number }}
           name: PrimalSpace ${{ github.run_number }}
           body: Native Android worker for PrimalSpace. Enable compute opt-in in the app and keep the foreground service running to accept work.
