@@ -1,0 +1,44 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK components
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build release APK
+        run: gradle assembleRelease --no-daemon
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: primalspace-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/*.apk
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: PrimalSpace ${{ github.run_number }}
+          body: Native Android worker for PrimalSpace. Enable compute opt-in in the app and keep the foreground service running to accept work.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
