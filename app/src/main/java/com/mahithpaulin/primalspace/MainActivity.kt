@@ -2,8 +2,11 @@ package com.mahithpaulin.primalspace
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,9 +47,37 @@ class MainActivity : AppCompatActivity() {
             startWorker()
         }
         sync.setOnClickListener { syncNow() }
+        findViewById<Button>(R.id.background).setOnClickListener { openBackgroundSettings() }
 
         requestPermissions()
         updateStatus()
+
+        if (intent?.action == ACTION_CONNECT) {
+            connectDevice()
+        } else if (prefs.isRegistered()) {
+            startWorker()
+        }
+    }
+
+    private fun openBackgroundSettings() {
+        try {
+            val manager = getSystemService(PowerManager::class.java)
+            if (manager != null && !manager.isIgnoringBatteryOptimizations(packageName)) {
+                startActivity(
+                    Intent(
+                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                        Uri.parse("package:$packageName"),
+                    ),
+                )
+                return
+            }
+        } catch (_: Exception) {
+        }
+        try {
+            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
+        } catch (_: Exception) {
+            status.text = "Open Settings > Apps > PrimalSpace and allow background running."
+        }
     }
 
     private fun requestPermissions() {
@@ -136,5 +167,9 @@ class MainActivity : AppCompatActivity() {
             "never"
         }
         detail.text = "Last sync $stamp" + if (prefs.lastError.isNotBlank()) " · ${prefs.lastError}" else ""
+    }
+
+    companion object {
+        const val ACTION_CONNECT = "com.mahithpaulin.primalspace.CONNECT"
     }
 }
