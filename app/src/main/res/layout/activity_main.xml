@@ -33,55 +33,27 @@
             android:text="Not connected"
             android:textColor="#9AA59C"
             android:textSize="14sp" />
-        <EditText
-            android:id="@+id/server"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:hint="Monitor URL"
-            android:inputType="textUri"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#5F6A62"
-            android:backgroundTint="#C9F36B" />
-        <EditText
-            android:id="@+id/enrollment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:hint="Enrollment key"
-            android:inputType="textPassword"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#5F6A62"
-            android:backgroundTint="#C9F36B" />
         <Button
             android:id="@+id/connect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Connect device"
+            android:layout_marginTop="28dp"
+            android:text="Connect to PrimalSpace"
             android:backgroundTint="#C9F36B"
             android:textColor="#0E1210" />
-        <Button
-            android:id="@+id/start"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Start worker"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
         <Button
             android:id="@+id/compute"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Toggle compute opt-in"
+            android:text="Enable compute"
             android:backgroundTint="#1C241F"
             android:textColor="#F4F6F1" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Compute is off by default. Enable it only when you want this device to accept work. The worker runs as a foreground service so Android keeps it alive."
+            android:text="Compute is off by default. Enable it only when you want this device to accept work. The worker runs as a foreground service so Android keeps it alive. You can disable it at any time."
             android:textColor="#6E7A71"
             android:textSize="12sp" />
     </LinearLayout>

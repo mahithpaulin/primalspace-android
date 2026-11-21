@@ -2,11 +2,9 @@ package com.mahithpaulin.primalspace
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +13,8 @@ import androidx.core.content.ContextCompat
 class MainActivity : AppCompatActivity() {
     private lateinit var prefs: Prefs
     private lateinit var status: TextView
+    private lateinit var connect: Button
+    private lateinit var compute: Button
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,19 +22,20 @@ class MainActivity : AppCompatActivity() {
         prefs = Prefs(this)
         setContentView(R.layout.activity_main)
 
-        val server = findViewById<EditText>(R.id.server)
-        val enrollment = findViewById<EditText>(R.id.enrollment)
-        val compute = findViewById<Button>(R.id.compute)
         status = findViewById<TextView>(R.id.status)
-        server.setText(prefs.serverUrl)
-        enrollment.setText(prefs.enrollmentKey)
+        connect = findViewById<Button>(R.id.connect)
+        compute = findViewById<Button>(R.id.compute)
 
-        findViewById<Button>(R.id.connect).setOnClickListener { connect(server.text.toString(), enrollment.text.toString()) }
-        findViewById<Button>(R.id.start).setOnClickListener { startWorker() }
+        connect.setOnClickListener { connectDevice() }
         compute.setOnClickListener {
+            if (!prefs.isRegistered()) {
+                status.text = "Connect the device first."
+                return@setOnClickListener
+            }
             prefs.computeEnabled = !prefs.computeEnabled
             updateStatus()
         }
+
         requestPermissions()
         updateStatus()
     }
@@ -45,43 +46,45 @@ class MainActivity : AppCompatActivity() {
         if (permissions.isNotEmpty()) permissionLauncher.launch(permissions.toTypedArray())
     }
 
-    private fun connect(server: String, enrollment: String) {
-        if (server.isBlank() || enrollment.isBlank()) {
-            status.text = "Server and enrollment key are required."
-            return
-        }
-        prefs.serverUrl = server.trim()
-        prefs.enrollmentKey = enrollment.trim()
-        status.text = "Connecting…"
+    private fun connectDevice() {
+        connect.isEnabled = false
+        status.text = "Connecting to PrimalSpace…"
         Thread {
             try {
-                val client = PrimalClient(this, prefs.serverUrl, prefs.enrollmentKey, "", "", prefs.deviceName, prefs.installId)
-                val (deviceId, token) = client.register()
-                prefs.deviceId = deviceId
-                prefs.token = token
-                runOnUiThread { status.text = "Connected. Worker is ready." }
-                startWorker()
+                val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
+                val registration = client.enroll()
+                prefs.deviceId = registration.first
+                prefs.token = registration.second
+                prefs.enrollmentKey = registration.third
+                runOnUiThread {
+                    status.text = "Connected. You can enable compute whenever you are ready."
+                    updateStatus()
+                    startWorker()
+                }
             } catch (error: Exception) {
-                runOnUiThread { status.text = "Connection failed: ${error.message}" }
+                runOnUiThread {
+                    status.text = "Connection failed: ${error.message}"
+                    connect.isEnabled = true
+                }
             }
         }.start()
     }
 
     private fun startWorker() {
-        if (prefs.deviceId.isEmpty() || prefs.token.isEmpty()) {
-            status.text = "Connect the device first."
-            return
-        }
+        if (!prefs.isRegistered()) return
         ContextCompat.startForegroundService(this, Intent(this, WorkerService::class.java))
-        updateStatus()
     }
 
     private fun updateStatus() {
-        val connected = prefs.deviceId.isNotEmpty() && prefs.token.isNotEmpty()
-        status.text = if (connected) {
-            "Connected · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}"
-        } else {
-            "Not connected"
+        if (!prefs.isRegistered()) {
+            status.text = "Not connected"
+            connect.isEnabled = true
+            compute.text = "Enable compute"
+            return
         }
+        connect.isEnabled = true
+        connect.text = "Reconnect device"
+        compute.text = if (prefs.computeEnabled) "Disable compute" else "Enable compute"
+        status.text = "Connected · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}"
     }
 }

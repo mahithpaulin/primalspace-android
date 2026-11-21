@@ -7,17 +7,13 @@ import org.json.JSONObject
 class PrimalClient(
     private val context: Context,
     private val serverUrl: String,
-    private val enrollmentKey: String,
-    private val deviceId: String,
-    private val token: String,
-    private val deviceName: String,
-    private val installId: String,
+    private val prefs: Prefs,
 ) {
     private val base = serverUrl.trimEnd('/')
 
-    fun register(): Pair<String, String> {
+    fun enroll(): Triple<String, String, String> {
         val device = JSONObject()
-            .put("name", deviceName)
+            .put("name", prefs.deviceName)
             .put("manufacturer", android.os.Build.MANUFACTURER)
             .put("model", android.os.Build.MODEL)
             .put("android_version", android.os.Build.VERSION.RELEASE)
@@ -25,11 +21,14 @@ class PrimalClient(
             .put("cpu_arch", "arm64-v8a")
             .put("cpu_cores", Runtime.getRuntime().availableProcessors())
         val body = JSONObject()
-            .put("enrollment_key", enrollmentKey)
-            .put("install_id", installId)
+            .put("install_id", prefs.installId)
             .put("device", device)
-        val response = post("/api/v1/register", body, null)
-        return response.getString("device_id") to response.getString("token")
+        val response = post("/api/v1/enroll", body, null)
+        return Triple(
+            response.getString("device_id"),
+            response.getString("token"),
+            response.getString("enrollment_key"),
+        )
     }
 
     fun heartbeat(computeEnabled: Boolean, workerStatus: String, taskId: String? = null): JSONObject {
@@ -48,16 +47,16 @@ class PrimalClient(
             .put("paused", false)
         if (taskId != null) worker.put("current_task_id", taskId)
         val body = JSONObject()
-            .put("device_id", deviceId)
+            .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
             .put("cli_version", "android-1.0.0")
-        return post("/api/v1/heartbeat", body, token)
+        return post("/api/v1/heartbeat", body, prefs.token)
     }
 
     fun claim(computeEnabled: Boolean): JSONObject? {
-        val body = JSONObject().put("device_id", deviceId).put("compute_enabled", computeEnabled)
-        val response = post("/api/v1/tasks/claim", body, token)
+        val body = JSONObject().put("device_id", prefs.deviceId).put("compute_enabled", computeEnabled)
+        val response = post("/api/v1/tasks/claim", body, prefs.token)
         return response.optJSONObject("task")
     }
 
@@ -65,13 +64,13 @@ class PrimalClient(
         val result = JSONObject()
         if (value != null) result.put("value", value)
         val body = JSONObject()
-            .put("device_id", deviceId)
+            .put("device_id", prefs.deviceId)
             .put("task_id", taskId)
             .put("status", status)
             .put("duration_ms", durationMs)
             .put("result", result)
         if (error != null) body.put("error", error)
-        return post("/api/v1/tasks/result", body, token)
+        return post("/api/v1/tasks/result", body, prefs.token)
     }
 
     private fun post(path: String, body: JSONObject, authToken: String?): JSONObject {

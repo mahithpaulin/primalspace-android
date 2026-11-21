@@ -6,10 +6,6 @@ import org.json.JSONObject
 class Prefs(context: Context) {
     private val prefs = context.getSharedPreferences("primalspace", Context.MODE_PRIVATE)
 
-    var serverUrl: String
-        get() = prefs.getString("server_url", "https://primal-space-monitor.vercel.app")!!
-        set(value) = prefs.edit().putString("server_url", value).apply()
-
     var enrollmentKey: String
         get() = prefs.getString("enrollment_key", "")!!
         set(value) = prefs.edit().putString("enrollment_key", value).apply()
@@ -40,7 +36,5 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean("compute_enabled", false)
         set(value) = prefs.edit().putBoolean("compute_enabled", value).apply()
 
-    fun clearRegistration() {
-        prefs.edit().remove("device_id").remove("token").apply()
-    }
+    fun isRegistered(): Boolean = deviceId.isNotEmpty() && token.isNotEmpty()
 }

@@ -40,18 +40,10 @@ class WorkerService : android.app.Service() {
 
     private suspend fun runLoop() {
         val prefs = Prefs(this)
-        val client = PrimalClient(
-            this,
-            prefs.serverUrl,
-            prefs.enrollmentKey,
-            prefs.deviceId,
-            prefs.token,
-            prefs.deviceName,
-            prefs.installId,
-        )
+        val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
         while (scope.isActive) {
             try {
-                if (prefs.deviceId.isEmpty() || prefs.token.isEmpty()) {
+                if (!prefs.isRegistered()) {
                     delay(5000)
                     continue
                 }
