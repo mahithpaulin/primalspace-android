@@ -69,7 +69,10 @@ class PrimalClient(
     }
 
     fun claim(computeEnabled: Boolean): JSONObject? {
-        val body = JSONObject().put("device_id", prefs.deviceId).put("compute_enabled", computeEnabled)
+        val body = JSONObject()
+            .put("device_id", prefs.deviceId)
+            .put("compute_enabled", computeEnabled)
+            .put("workloads", listOf("hash_sum_v1"))
         val response = post("/api/v1/tasks/claim", body, prefs.token)
         return response.optJSONObject("task")
     }
