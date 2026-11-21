@@ -18,7 +18,12 @@ class WorkerService : android.app.Service() {
     override fun onCreate() {
         super.onCreate()
         Notifications.ensureChannel(this)
-        ServiceCompat.startForeground(this, 7, Notifications.build(this, "PrimalSpace", "Starting worker…"), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        ServiceCompat.startForeground(
+            this,
+            7,
+            Notifications.build(this, "PrimalSpace", "Starting worker…"),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+        )
         job = scope.launch { runLoop() }
     }
 
@@ -44,12 +49,15 @@ class WorkerService : android.app.Service() {
         while (scope.isActive) {
             try {
                 if (!prefs.isRegistered()) {
-                    delay(5000)
+                    client.enrollIfNeeded()
+                    delay(1000)
                     continue
                 }
                 val task = client.claim(prefs.computeEnabled)
                 if (task == null) {
                     client.heartbeat(prefs.computeEnabled, "idle")
+                    prefs.lastError = ""
+                    prefs.lastSyncAt = System.currentTimeMillis()
                     delay(5000)
                     continue
                 }
@@ -71,7 +79,25 @@ class WorkerService : android.app.Service() {
                 } catch (error: Exception) {
                     client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", System.currentTimeMillis() - started)
                 }
+                prefs.lastError = ""
+                prefs.lastSyncAt = System.currentTimeMillis()
             } catch (error: Exception) {
+                val message = error.message ?: error.javaClass.simpleName
+                prefs.lastError = message
+                if (error is ApiException && (error.status == 401 || error.status == 404)) {
+                    prefs.clearRegistration()
+                    try {
+                        client.enrollIfNeeded()
+                    } catch (enrollError: Exception) {
+                        prefs.lastError = enrollError.message ?: "re-enroll failed"
+                    }
+                } else {
+                    try {
+                        client.heartbeat(prefs.computeEnabled, "error", null, message)
+                        prefs.lastSyncAt = System.currentTimeMillis()
+                    } catch (ignored: Exception) {
+                    }
+                }
                 delay(5000)
             }
         }

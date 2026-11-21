@@ -1,8 +1,6 @@
 package com.mahithpaulin.primalspace
 
-import android.app.ActivityManager
-import android.content.Context
-import org.json.JSONObject
+class ApiException(val status: Int, message: String) : Exception(message)
 
 class PrimalClient(
     private val context: Context,
@@ -31,7 +29,18 @@ class PrimalClient(
         )
     }
 
-    fun heartbeat(computeEnabled: Boolean, workerStatus: String, taskId: String? = null): JSONObject {
+    fun enrollIfNeeded(): Boolean {
+        if (!prefs.isRegistered()) {
+            val (deviceId, token, enrollmentKey) = enroll()
+            prefs.deviceId = deviceId
+            prefs.token = token
+            prefs.enrollmentKey = enrollmentKey
+            return true
+        }
+        return false
+    }
+
+    fun heartbeat(computeEnabled: Boolean, workerStatus: String, taskId: String? = null, lastError: String? = null): JSONObject {
         val metrics = JSONObject()
             .put("ram_total_mb", totalRamMb())
             .put("ram_available_mb", availableRamMb())
@@ -46,11 +55,12 @@ class PrimalClient(
             .put("compute_enabled", computeEnabled)
             .put("paused", false)
         if (taskId != null) worker.put("current_task_id", taskId)
+        if (!lastError.isNullOrBlank()) worker.put("last_error", lastError.take(180))
         val body = JSONObject()
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.0.0")
+            .put("cli_version", "android-1.1.0")
         return post("/api/v1/heartbeat", body, prefs.token)
     }
 
@@ -87,7 +97,7 @@ class PrimalClient(
         val stream = if (code in 200..299) connection.inputStream else connection.errorStream
         val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
         connection.disconnect()
-        if (code !in 200..299) throw IllegalStateException("HTTP $code: ${text.take(300)}")
+        if (code !in 200..299) throw ApiException(code, "HTTP $code: ${text.take(200)}")
         return JSONObject(text)
     }
 

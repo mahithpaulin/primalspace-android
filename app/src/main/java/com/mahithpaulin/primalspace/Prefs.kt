@@ -36,5 +36,17 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean("compute_enabled", false)
         set(value) = prefs.edit().putBoolean("compute_enabled", value).apply()
 
+    var lastError: String
+        get() = prefs.getString("last_error", "")!!
+        set(value) = prefs.edit().putString("last_error", value.take(180)).apply()
+
+    var lastSyncAt: Long
+        get() = prefs.getLong("last_sync_at", 0L)
+        set(value) = prefs.edit().putLong("last_sync_at", value).apply()
+
     fun isRegistered(): Boolean = deviceId.isNotEmpty() && token.isNotEmpty()
+
+    fun clearRegistration() {
+        prefs.edit().remove("device_id").remove("token").apply()
+    }
 }

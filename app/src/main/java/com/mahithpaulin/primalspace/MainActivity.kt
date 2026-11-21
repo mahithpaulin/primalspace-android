@@ -9,12 +9,17 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var prefs: Prefs
     private lateinit var status: TextView
+    private lateinit var detail: TextView
     private lateinit var connect: Button
     private lateinit var compute: Button
+    private lateinit var sync: Button
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +28,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         status = findViewById<TextView>(R.id.status)
+        detail = findViewById<TextView>(R.id.detail)
         connect = findViewById<Button>(R.id.connect)
         compute = findViewById<Button>(R.id.compute)
+        sync = findViewById<Button>(R.id.sync)
 
         connect.setOnClickListener { connectDevice() }
         compute.setOnClickListener {
@@ -34,7 +41,9 @@ class MainActivity : AppCompatActivity() {
             }
             prefs.computeEnabled = !prefs.computeEnabled
             updateStatus()
+            startWorker()
         }
+        sync.setOnClickListener { syncNow() }
 
         requestPermissions()
         updateStatus()
@@ -49,23 +58,54 @@ class MainActivity : AppCompatActivity() {
     private fun connectDevice() {
         connect.isEnabled = false
         status.text = "Connecting to PrimalSpace…"
+        detail.text = ""
         Thread {
             try {
                 val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
-                val registration = client.enroll()
-                prefs.deviceId = registration.first
-                prefs.token = registration.second
-                prefs.enrollmentKey = registration.third
+                val (deviceId, token, enrollmentKey) = client.enroll()
+                prefs.deviceId = deviceId
+                prefs.token = token
+                prefs.enrollmentKey = enrollmentKey
+                prefs.lastError = ""
+                client.heartbeat(prefs.computeEnabled, "idle")
+                prefs.lastSyncAt = System.currentTimeMillis()
                 runOnUiThread {
-                    status.text = "Connected. You can enable compute whenever you are ready."
+                    status.text = "Connected. Enable compute whenever you are ready."
                     updateStatus()
                     startWorker()
                 }
             } catch (error: Exception) {
+                prefs.lastError = error.message ?: "connect failed"
                 runOnUiThread {
-                    status.text = "Connection failed: ${error.message}"
+                    status.text = "Connection failed"
+                    detail.text = prefs.lastError
                     connect.isEnabled = true
                 }
+            }
+        }.start()
+    }
+
+    private fun syncNow() {
+        if (!prefs.isRegistered()) {
+            status.text = "Connect the device first."
+            return
+        }
+        sync.isEnabled = false
+        Thread {
+            try {
+                val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
+                client.heartbeat(prefs.computeEnabled, "idle")
+                prefs.lastError = ""
+                prefs.lastSyncAt = System.currentTimeMillis()
+                runOnUiThread { updateStatus() }
+            } catch (error: Exception) {
+                prefs.lastError = error.message ?: "sync failed"
+                runOnUiThread {
+                    updateStatus()
+                    detail.text = prefs.lastError
+                }
+            } finally {
+                runOnUiThread { sync.isEnabled = true }
             }
         }.start()
     }
@@ -78,13 +118,23 @@ class MainActivity : AppCompatActivity() {
     private fun updateStatus() {
         if (!prefs.isRegistered()) {
             status.text = "Not connected"
+            detail.text = "Tap connect to join."
             connect.isEnabled = true
+            connect.text = "Connect to PrimalSpace"
             compute.text = "Enable compute"
+            sync.isEnabled = false
             return
         }
         connect.isEnabled = true
         connect.text = "Reconnect device"
         compute.text = if (prefs.computeEnabled) "Disable compute" else "Enable compute"
+        sync.isEnabled = true
         status.text = "Connected · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}"
+        val stamp = if (prefs.lastSyncAt > 0) {
+            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(prefs.lastSyncAt))
+        } else {
+            "never"
+        }
+        detail.text = "Last sync $stamp" + if (prefs.lastError.isNotBlank()) " · ${prefs.lastError}" else ""
     }
 }

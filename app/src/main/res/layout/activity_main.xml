@@ -33,6 +33,14 @@
             android:text="Not connected"
             android:textColor="#9AA59C"
             android:textSize="14sp" />
+        <TextView
+            android:id="@+id/detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text=""
+            android:textColor="#6E7A71"
+            android:textSize="12sp" />
         <Button
             android:id="@+id/connect"
             android:layout_width="match_parent"
@@ -47,6 +55,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Enable compute"
+            android:backgroundTint="#1C241F"
+            android:textColor="#F4F6F1" />
+        <Button
+            android:id="@+id/sync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Sync now"
             android:backgroundTint="#1C241F"
             android:textColor="#F4F6F1" />
         <TextView
