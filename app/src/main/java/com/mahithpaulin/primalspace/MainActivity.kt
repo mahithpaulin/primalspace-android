@@ -54,9 +54,20 @@ class MainActivity : AppCompatActivity() {
 
         if (intent?.action == ACTION_CONNECT) {
             connectDevice()
+        } else if (intent?.action == ACTION_COMPUTE) {
+            setCompute(true)
+        } else if (intent?.action == ACTION_COMPUTE_OFF) {
+            setCompute(false)
         } else if (prefs.isRegistered()) {
             startWorker()
         }
+    }
+
+    private fun setCompute(enabled: Boolean) {
+        prefs.computeEnabled = enabled
+        android.util.Log.i("PrimalSpace", "compute toggled: $enabled")
+        if (enabled) startWorker()
+        updateStatus()
     }
 
     private fun openBackgroundSettings() {
@@ -178,5 +189,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val ACTION_CONNECT = "com.mahithpaulin.primalspace.CONNECT"
+        const val ACTION_COMPUTE = "com.mahithpaulin.primalspace.COMPUTE"
+        const val ACTION_COMPUTE_OFF = "com.mahithpaulin.primalspace.COMPUTE_OFF"
     }
 }
