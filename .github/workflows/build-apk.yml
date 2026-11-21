@@ -20,8 +20,19 @@ jobs:
           java-version: '17'
       - name: Install Android SDK components
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager_path=""
+          for candidate in "${ANDROID_SDK_ROOT:-}" "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}/opt/android-sdk" ; do
+            if [ -n "$candidate" ]; then
+              for tool in "$candidate"/cmdline-tools/*/bin/sdkmanager; do
+                if [ -x "$tool" ]; then sdkmanager_path="$tool"; break; fi
+              done
+            fi
+            if [ -n "$sdkmanager_path" ]; then break; fi
+          done
+          if [ -z "$sdkmanager_path" ]; then echo "sdkmanager not found"; exit 1; fi
+          echo "Using $sdkmanager_path"
+          yes | "$sdkmanager_path" --licenses > /dev/null 2>&1 || true
+          "$sdkmanager_path" "platforms;android-35" "build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
