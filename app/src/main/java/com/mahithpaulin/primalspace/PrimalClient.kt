@@ -12,6 +12,7 @@ class PrimalClient(
     private val prefs: Prefs,
 ) {
     private val base = serverUrl.trimEnd('/')
+    private val workloads = org.json.JSONArray().put("hash_sum_v1")
 
     fun enroll(): Triple<String, String, String> {
         val device = JSONObject()
@@ -64,8 +65,8 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.4.3")
-            .put("workloads", listOf("hash_sum_v1"))
+            .put("cli_version", "android-1.4.4")
+            .put("workloads", workloads)
         return post("/api/v1/heartbeat", body, prefs.token)
     }
 
@@ -73,7 +74,7 @@ class PrimalClient(
         val body = JSONObject()
             .put("device_id", prefs.deviceId)
             .put("compute_enabled", computeEnabled)
-            .put("workloads", listOf("hash_sum_v1"))
+            .put("workloads", workloads)
         val response = post("/api/v1/tasks/claim", body, prefs.token)
         return response.optJSONObject("task")
     }

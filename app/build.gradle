@@ -5,8 +5,8 @@ android { namespace 'com.mahithpaulin.primalspace'; compileSdk 35
         applicationId 'com.mahithpaulin.primalspace'
         minSdk 26
         targetSdk 35
-        versionCode 9
-        versionName '1.4.4'
+        versionCode 10
+        versionName '1.4.5'
         buildConfigField 'String', 'PRIMAL_SERVER_URL', '"https://primal-space-monitor.vercel.app"'
     }
     buildTypes { release { minifyEnabled false } }
