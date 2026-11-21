@@ -92,13 +92,16 @@ class MainActivity : AppCompatActivity() {
         detail.text = ""
         Thread {
             try {
+                android.util.Log.i("PrimalSpace", "connect: starting enroll")
                 val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
                 val (deviceId, token, enrollmentKey) = client.enroll()
+                android.util.Log.i("PrimalSpace", "connect: enrolled device=$deviceId")
                 prefs.deviceId = deviceId
                 prefs.token = token
                 prefs.enrollmentKey = enrollmentKey
                 prefs.lastError = ""
                 client.heartbeat(prefs.computeEnabled, "idle")
+                android.util.Log.i("PrimalSpace", "connect: heartbeat ok")
                 prefs.lastSyncAt = System.currentTimeMillis()
                 runOnUiThread {
                     status.text = "Connected. Enable compute whenever you are ready."
@@ -106,6 +109,7 @@ class MainActivity : AppCompatActivity() {
                     startWorker()
                 }
             } catch (error: Exception) {
+                android.util.Log.e("PrimalSpace", "connect failed", error)
                 prefs.lastError = error.message ?: "connect failed"
                 runOnUiThread {
                     status.text = "Connection failed"
@@ -125,11 +129,14 @@ class MainActivity : AppCompatActivity() {
         Thread {
             try {
                 val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
+                android.util.Log.i("PrimalSpace", "sync: heartbeat start")
                 client.heartbeat(prefs.computeEnabled, "idle")
+                android.util.Log.i("PrimalSpace", "sync: heartbeat ok")
                 prefs.lastError = ""
                 prefs.lastSyncAt = System.currentTimeMillis()
                 runOnUiThread { updateStatus() }
             } catch (error: Exception) {
+                android.util.Log.e("PrimalSpace", "sync failed", error)
                 prefs.lastError = error.message ?: "sync failed"
                 runOnUiThread {
                     updateStatus()
