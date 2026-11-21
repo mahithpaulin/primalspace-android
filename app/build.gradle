@@ -10,6 +10,7 @@ android { namespace 'com.mahithpaulin.primalspace'; compileSdk 35
         buildConfigField 'String', 'PRIMAL_SERVER_URL', '"https://primal-space-monitor.vercel.app"'
     }
     buildTypes { release { minifyEnabled false } }
+    buildFeatures { buildConfig true }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
 
