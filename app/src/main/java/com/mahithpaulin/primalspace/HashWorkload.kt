@@ -24,8 +24,10 @@ object HashWorkload {
             digest.update("$seed:$index".toByteArray(Charsets.UTF_8))
             val bytes = digest.digest()
             var value = 0L
-            for (index2 in 0 until 8) value = (value shl 8) or (bytes[index2].toLong() and 0xff)
-            sum = (sum + value % MOD) % MOD
+            for (byteIndex in 0 until 8) {
+                value = ((value shl 8) or (bytes[byteIndex].toLong() and 0xff)) % MOD
+            }
+            sum = (sum + value) % MOD
         }
         return sum
     }
