@@ -64,7 +64,8 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.3.0")
+            .put("cli_version", "android-1.4.3")
+            .put("workloads", listOf("hash_sum_v1"))
         return post("/api/v1/heartbeat", body, prefs.token)
     }
 
