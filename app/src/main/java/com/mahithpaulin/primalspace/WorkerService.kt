@@ -148,7 +148,7 @@ class WorkerService : android.app.Service() {
         if (earned > 0.0) {
             prefs.creditUnits = prefs.creditUnits + earned
             prefs.creditTotalUnits = prefs.creditTotalUnits + earned
-            android.util.Log.i("PrimalSpace", "earned %.4f compute units (balance %.4f)", earned, prefs.creditUnits)
+            android.util.Log.i("PrimalSpace", "earned " + earned + " compute units (balance " + prefs.creditUnits + ")")
         }
     }
 

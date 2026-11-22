@@ -103,7 +103,6 @@ class PrimalClient(
             prefs.lendUnitsPerHour = units
         }
     }
-    }
 
     fun claim(computeEnabled: Boolean): JSONObject? {
         val body = JSONObject()
