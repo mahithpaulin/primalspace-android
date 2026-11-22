@@ -77,6 +77,71 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
+            android:text="ACTIVE COMPUTE"
+            android:textColor="#C9F36B"
+            android:textSize="13sp"
+            android:letterSpacing="0.18"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Lend a slice of this device. One hour of compute lent earns one compute unit, stored on this phone."
+            android:textColor="#6E7A71"
+            android:textSize="12sp" />
+        <EditText
+            android:id="@+id/lend_cpu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#3A463D"
+            android:hint="CPU to lend (%)"
+            android:inputType="number"
+            android:textColor="#F4F6F1"
+            android:textColorHint="#6E7A71"
+            android:textSize="14sp" />
+        <EditText
+            android:id="@+id/lend_minutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#3A463D"
+            android:hint="Minutes per hour to lend"
+            android:inputType="number"
+            android:textColor="#F4F6F1"
+            android:textColorHint="#6E7A71"
+            android:textSize="14sp" />
+        <EditText
+            android:id="@+id/lend_units"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#3A463D"
+            android:hint="Units per hour (default 1)"
+            android:inputType="numberDecimal"
+            android:textColor="#F4F6F1"
+            android:textColorHint="#6E7A71"
+            android:textSize="14sp" />
+        <Button
+            android:id="@+id/lending_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Start lending compute"
+            android:backgroundTint="#1C241F"
+            android:textColor="#F4F6F1" />
+        <TextView
+            android:id="@+id/credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Compute units: 0.00 · earned 0.00"
+            android:textColor="#9AA59C"
+            android:textSize="13sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
             android:text="MESSAGES"
             android:textColor="#C9F36B"
             android:textSize="13sp"

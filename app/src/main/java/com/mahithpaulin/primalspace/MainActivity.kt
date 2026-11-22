@@ -33,12 +33,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var messageTarget: Spinner
     private lateinit var messageBody: EditText
     private lateinit var messageSend: Button
+    private lateinit var lendingToggle: Button
+    private lateinit var lendCpu: EditText
+    private lateinit var lendMinutes: EditText
+    private lateinit var lendUnits: EditText
+    private lateinit var credits: TextView
     private val peerIds = mutableListOf<String?>()
     private val peerNames = mutableListOf<String>()
     private val handler = Handler(Looper.getMainLooper())
     private val ticker = object : Runnable {
         override fun run() {
             renderInbox()
+            renderLending()
             handler.postDelayed(this, 4000)
         }
     }
@@ -58,6 +64,11 @@ class MainActivity : AppCompatActivity() {
         messageTarget = findViewById<Spinner>(R.id.message_target)
         messageBody = findViewById<EditText>(R.id.message_body)
         messageSend = findViewById<Button>(R.id.message_send)
+        lendingToggle = findViewById<Button>(R.id.lending_toggle)
+        lendCpu = findViewById<EditText>(R.id.lend_cpu)
+        lendMinutes = findViewById<EditText>(R.id.lend_minutes)
+        lendUnits = findViewById<EditText>(R.id.lend_units)
+        credits = findViewById<TextView>(R.id.credits)
 
         connect.setOnClickListener { connectDevice() }
         compute.setOnClickListener {
@@ -72,12 +83,14 @@ class MainActivity : AppCompatActivity() {
         sync.setOnClickListener { syncNow() }
         findViewById<Button>(R.id.background).setOnClickListener { openBackgroundSettings() }
         messageSend.setOnClickListener { sendMessage() }
+        lendingToggle.setOnClickListener { toggleLending() }
 
         setTargets(listOf("All devices" to null))
 
         requestPermissions()
         updateStatus()
         renderInbox()
+        renderLending()
 
         if (intent?.action == ACTION_CONNECT) {
             connectDevice()
@@ -95,6 +108,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         handler.postDelayed(ticker, 1000)
         renderInbox()
+        renderLending()
     }
 
     override fun onPause() {
@@ -267,6 +281,39 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread { messageSend.isEnabled = true }
             }
         }.start()
+    }
+
+    private fun toggleLending() {
+        if (!prefs.isRegistered()) {
+            status.text = "Connect the device first."
+            return
+        }
+        val enabling = !prefs.lendingEnabled
+        if (enabling) {
+            prefs.lendCpuPct = lendCpu.text.toString().trim().toIntOrNull()?.coerceIn(1, 100) ?: prefs.lendCpuPct
+            prefs.lendMinutesPerHour = lendMinutes.text.toString().trim().toIntOrNull()?.coerceIn(1, 60) ?: prefs.lendMinutesPerHour
+            prefs.lendUnitsPerHour = lendUnits.text.toString().trim().toDoubleOrNull()?.coerceIn(0.01, 100.0) ?: prefs.lendUnitsPerHour
+        }
+        prefs.lendingEnabled = enabling
+        renderLending()
+        detail.text = if (enabling) {
+            "Lending ${prefs.lendCpuPct}% CPU for ${prefs.lendMinutesPerHour} min/hour · ${prefs.lendUnitsPerHour} unit(s)/hour"
+        } else {
+            "Active compute off. Banked units kept."
+        }
+        startWorker()
+    }
+
+    private fun renderLending() {
+        lendingToggle.text = if (prefs.lendingEnabled) "Stop lending compute" else "Start lending compute"
+        if (lendCpu.text.isNullOrBlank()) lendCpu.setText(prefs.lendCpuPct.toString())
+        if (lendMinutes.text.isNullOrBlank()) lendMinutes.setText(prefs.lendMinutesPerHour.toString())
+        if (lendUnits.text.isNullOrBlank()) lendUnits.setText(prefs.lendUnitsPerHour.toString())
+        credits.text = "Compute units: %.2f · earned %.2f · %.1f min used this hour".format(
+            prefs.creditUnits,
+            prefs.creditTotalUnits,
+            prefs.creditMinutesUsed,
+        )
     }
 
     private fun renderInbox() {

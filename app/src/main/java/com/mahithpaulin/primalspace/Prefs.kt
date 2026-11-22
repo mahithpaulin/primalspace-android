@@ -45,6 +45,38 @@ class Prefs(context: Context) {
         get() = prefs.getLong("last_sync_at", 0L)
         set(value) = prefs.edit().putLong("last_sync_at", value).apply()
 
+    var lendingEnabled: Boolean
+        get() = prefs.getBoolean("lending_enabled", false)
+        set(value) = prefs.edit().putBoolean("lending_enabled", value).apply()
+
+    var lendCpuPct: Int
+        get() = prefs.getInt("lend_cpu_pct", 20)
+        set(value) = prefs.edit().putInt("lend_cpu_pct", value.coerceIn(1, 100)).apply()
+
+    var lendMinutesPerHour: Int
+        get() = prefs.getInt("lend_minutes_per_hour", 30)
+        set(value) = prefs.edit().putInt("lend_minutes_per_hour", value.coerceIn(1, 60)).apply()
+
+    var lendUnitsPerHour: Double
+        get() = prefs.getString("lend_units_per_hour", "1.0")!!.toDoubleOrNull() ?: 1.0
+        set(value) = prefs.edit().putString("lend_units_per_hour", value.toString()).apply()
+
+    var creditUnits: Double
+        get() = prefs.getString("credit_units", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("credit_units", value.toString()).apply()
+
+    var creditTotalUnits: Double
+        get() = prefs.getString("credit_total_units", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("credit_total_units", value.toString()).apply()
+
+    var creditMinutesUsed: Double
+        get() = prefs.getString("credit_minutes_used", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("credit_minutes_used", value.toString()).apply()
+
+    var creditWindowStart: Long
+        get() = prefs.getLong("credit_window_start", 0L)
+        set(value) = prefs.edit().putLong("credit_window_start", value).apply()
+
     var messageCursor: String
         get() = prefs.getString("message_cursor", "")!!
         set(value) = prefs.edit().putString("message_cursor", value).apply()

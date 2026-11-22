@@ -71,9 +71,14 @@ class WorkerService : android.app.Service() {
                     continue
                 }
                 pollMessages(client, prefs)
+                if (allowanceReached(prefs)) {
+                    android.util.Log.i("PrimalSpace", "worker: lending allowance reached for this hour")
+                    delay(5000)
+                    continue
+                }
                 val task = client.claim(prefs.computeEnabled)
                 if (task == null) {
-                    client.heartbeat(prefs.computeEnabled, "idle")
+                    client.applyLendingRequest(client.heartbeat(prefs.computeEnabled, "idle"))
                     android.util.Log.i("PrimalSpace", "worker: heartbeat ok")
                     prefs.lastError = ""
                     prefs.lastSyncAt = System.currentTimeMillis()
@@ -81,7 +86,7 @@ class WorkerService : android.app.Service() {
                     continue
                 }
                 val taskId = task.getString("id")
-                client.heartbeat(prefs.computeEnabled, "running", taskId)
+                client.applyLendingRequest(client.heartbeat(prefs.computeEnabled, "running", taskId))
                 val workload = task.optString("workload")
                 if (workload != "http") {
                     client.submitResult(taskId, "failed", null, "unsupported_workload", 0)
@@ -91,7 +96,9 @@ class WorkerService : android.app.Service() {
                 val started = System.currentTimeMillis()
                 try {
                     val value = HttpWorkload.execute(params)
-                    client.submitResult(taskId, "completed", value, null, System.currentTimeMillis() - started)
+                    val elapsed = System.currentTimeMillis() - started
+                    client.submitResult(taskId, "completed", value, null, elapsed)
+                    accrueUnits(prefs, elapsed)
                 } catch (error: Exception) {
                     client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", System.currentTimeMillis() - started)
                 }
@@ -117,6 +124,31 @@ class WorkerService : android.app.Service() {
                 }
                 delay(5000)
             }
+        }
+    }
+
+    private fun allowanceReached(prefs: Prefs): Boolean {
+        if (!prefs.lendingEnabled) return false
+        val window = System.currentTimeMillis() - (System.currentTimeMillis() % 3600000L)
+        if (prefs.creditWindowStart != window) return false
+        return prefs.creditMinutesUsed >= prefs.lendMinutesPerHour
+    }
+
+    private fun accrueUnits(prefs: Prefs, durationMs: Long) {
+        if (!prefs.lendingEnabled) return
+        val now = System.currentTimeMillis()
+        val window = now - (now % 3600000L)
+        if (prefs.creditWindowStart != window) {
+            prefs.creditWindowStart = window
+            prefs.creditMinutesUsed = 0.0
+        }
+        val minutes = durationMs / 60000.0
+        prefs.creditMinutesUsed = minOf(60.0, prefs.creditMinutesUsed + minutes)
+        val earned = (durationMs / 3600000.0) * prefs.lendUnitsPerHour
+        if (earned > 0.0) {
+            prefs.creditUnits = prefs.creditUnits + earned
+            prefs.creditTotalUnits = prefs.creditTotalUnits + earned
+            android.util.Log.i("PrimalSpace", "earned %.4f compute units (balance %.4f)", earned, prefs.creditUnits)
         }
     }
 

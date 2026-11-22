@@ -46,7 +46,12 @@ class PrimalClient(
         return false
     }
 
-    fun heartbeat(computeEnabled: Boolean, workerStatus: String, taskId: String? = null, lastError: String? = null): JSONObject {
+    fun heartbeat(
+        computeEnabled: Boolean,
+        workerStatus: String,
+        taskId: String? = null,
+        lastError: String? = null,
+    ): JSONObject {
         val metrics = JSONObject()
             .put("ram_total_mb", totalRamMb())
             .put("ram_available_mb", availableRamMb())
@@ -66,9 +71,38 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.6.0")
+            .put("cli_version", "android-1.7.0")
             .put("workloads", workloads)
+            .put("credits", creditsPayload())
+            .put("lending", JSONObject()
+                .put("enabled", prefs.lendingEnabled)
+                .put("cpu_pct", prefs.lendCpuPct)
+                .put("minutes_per_hour", prefs.lendMinutesPerHour)
+                .put("units_per_hour", prefs.lendUnitsPerHour))
         return post("/api/v1/heartbeat", body, prefs.token)
+
+    private fun creditsPayload(): JSONObject {
+        return JSONObject()
+            .put("units", prefs.creditUnits)
+            .put("total_units", prefs.creditTotalUnits)
+            .put("minutes_used", prefs.creditMinutesUsed)
+            .put("window_start", prefs.creditWindowStart.takeIf { it > 0 }?.toString())
+            .put("updated_at", java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US).format(java.util.Date()))
+    }
+
+    fun applyLendingRequest(response: JSONObject) {
+        val request = response.optJSONObject("lending_request") ?: return
+        val enabled = request.optBoolean("enabled", prefs.lendingEnabled)
+        val cpu = request.optInt("cpu_pct", prefs.lendCpuPct).coerceIn(1, 100)
+        val minutes = request.optInt("minutes_per_hour", prefs.lendMinutesPerHour).coerceIn(1, 60)
+        val units = request.optDouble("units_per_hour", prefs.lendUnitsPerHour).coerceIn(0.01, 100.0)
+        if (enabled != prefs.lendingEnabled || cpu != prefs.lendCpuPct || minutes != prefs.lendMinutesPerHour || units != prefs.lendUnitsPerHour) {
+            prefs.lendingEnabled = enabled
+            prefs.lendCpuPct = cpu
+            prefs.lendMinutesPerHour = minutes
+            prefs.lendUnitsPerHour = units
+        }
+    }
     }
 
     fun claim(computeEnabled: Boolean): JSONObject? {
