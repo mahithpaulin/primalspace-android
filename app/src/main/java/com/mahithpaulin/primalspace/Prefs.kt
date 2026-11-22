@@ -1,6 +1,7 @@
 package com.mahithpaulin.primalspace
 
 import android.content.Context
+import org.json.JSONArray
 import org.json.JSONObject
 
 class Prefs(context: Context) {
@@ -43,6 +44,35 @@ class Prefs(context: Context) {
     var lastSyncAt: Long
         get() = prefs.getLong("last_sync_at", 0L)
         set(value) = prefs.edit().putLong("last_sync_at", value).apply()
+
+    var messageCursor: String
+        get() = prefs.getString("message_cursor", "")!!
+        set(value) = prefs.edit().putString("message_cursor", value).apply()
+
+    val inboxVersion: Long
+        get() = prefs.getLong("inbox_version", 0L)
+
+    fun inbox(): JSONArray {
+        return try {
+            JSONArray(prefs.getString("inbox", "[]"))
+        } catch (_: Exception) {
+            JSONArray()
+        }
+    }
+
+    fun addMessage(message: JSONObject) {
+        val existing = inbox()
+        val trimmed = JSONArray()
+        val start = maxOf(0, existing.length() - 29)
+        for (index in start until existing.length()) {
+            trimmed.put(existing.get(index))
+        }
+        trimmed.put(message)
+        prefs.edit()
+            .putString("inbox", trimmed.toString())
+            .putLong("inbox_version", System.currentTimeMillis())
+            .apply()
+    }
 
     fun isRegistered(): Boolean = deviceId.isNotEmpty() && token.isNotEmpty()
 

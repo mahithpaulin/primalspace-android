@@ -3,6 +3,7 @@ package com.mahithpaulin.primalspace
 import android.app.ActivityManager
 import android.content.Context
 import org.json.JSONObject
+import java.net.URLEncoder
 
 class ApiException(val status: Int, message: String) : Exception(message)
 
@@ -12,7 +13,7 @@ class PrimalClient(
     private val prefs: Prefs,
 ) {
     private val base = serverUrl.trimEnd('/')
-    private val workloads = org.json.JSONArray().put("hash_sum_v1")
+    private val workloads = org.json.JSONArray().put("http")
 
     fun enroll(): Triple<String, String, String> {
         val device = JSONObject()
@@ -65,7 +66,7 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.5.1")
+            .put("cli_version", "android-1.6.0")
             .put("workloads", workloads)
         return post("/api/v1/heartbeat", body, prefs.token)
     }
@@ -79,7 +80,7 @@ class PrimalClient(
         return response.optJSONObject("task")
     }
 
-    fun submitResult(taskId: String, status: String, value: Long?, error: String? = null, durationMs: Long): JSONObject {
+    fun submitResult(taskId: String, status: String, value: Any?, error: String? = null, durationMs: Long): JSONObject {
         val result = JSONObject()
         if (value != null) result.put("value", value)
         val body = JSONObject()
@@ -90,6 +91,44 @@ class PrimalClient(
             .put("result", result)
         if (error != null) body.put("error", error)
         return post("/api/v1/tasks/result", body, prefs.token)
+    }
+
+    fun getPeers(): org.json.JSONArray {
+        val response = get("/api/v1/peers?device_id=${encode(prefs.deviceId)}", prefs.token)
+        return response.optJSONArray("peers") ?: org.json.JSONArray()
+    }
+
+    fun getMessages(since: String?): org.json.JSONArray {
+        var path = "/api/v1/messages?device_id=${encode(prefs.deviceId)}"
+        if (!since.isNullOrBlank()) path += "&since=${encode(since)}"
+        val response = get(path, prefs.token)
+        return response.optJSONArray("messages") ?: org.json.JSONArray()
+    }
+
+    fun sendMessage(to: String?, body: String): JSONObject {
+        val payload = JSONObject()
+            .put("device_id", prefs.deviceId)
+            .put("to", to)
+            .put("topic", "chat")
+            .put("body", body)
+        return post("/api/v1/messages", payload, prefs.token)
+    }
+
+    private fun encode(value: String): String = URLEncoder.encode(value, "UTF-8")
+
+    private fun get(path: String, authToken: String?): JSONObject {
+        val connection = java.net.URL(base + path).openConnection() as java.net.HttpURLConnection
+        connection.requestMethod = "GET"
+        connection.connectTimeout = 15000
+        connection.readTimeout = 20000
+        connection.setRequestProperty("Accept", "application/json")
+        if (authToken != null) connection.setRequestProperty("Authorization", "Bearer $authToken")
+        val code = connection.responseCode
+        val stream = if (code in 200..299) connection.inputStream else connection.errorStream
+        val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
+        connection.disconnect()
+        if (code !in 200..299) throw ApiException(code, "HTTP $code: ${text.take(200)}")
+        return JSONObject(text)
     }
 
     private fun post(path: String, body: JSONObject, authToken: String?): JSONObject {

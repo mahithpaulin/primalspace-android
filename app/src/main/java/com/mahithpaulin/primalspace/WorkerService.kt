@@ -70,6 +70,7 @@ class WorkerService : android.app.Service() {
                     delay(1000)
                     continue
                 }
+                pollMessages(client, prefs)
                 val task = client.claim(prefs.computeEnabled)
                 if (task == null) {
                     client.heartbeat(prefs.computeEnabled, "idle")
@@ -82,17 +83,14 @@ class WorkerService : android.app.Service() {
                 val taskId = task.getString("id")
                 client.heartbeat(prefs.computeEnabled, "running", taskId)
                 val workload = task.optString("workload")
-                if (workload != "hash_sum_v1") {
+                if (workload != "http") {
                     client.submitResult(taskId, "failed", null, "unsupported_workload", 0)
                     continue
                 }
                 val params = task.getJSONObject("params")
-                val seed = params.getString("seed")
-                val iterations = params.getInt("iterations")
-                val chunks = params.getInt("chunks")
                 val started = System.currentTimeMillis()
                 try {
-                    val value = HashWorkload.compute(seed, iterations, chunks)
+                    val value = HttpWorkload.execute(params)
                     client.submitResult(taskId, "completed", value, null, System.currentTimeMillis() - started)
                 } catch (error: Exception) {
                     client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", System.currentTimeMillis() - started)
@@ -119,6 +117,27 @@ class WorkerService : android.app.Service() {
                 }
                 delay(5000)
             }
+        }
+    }
+
+    private fun pollMessages(client: PrimalClient, prefs: Prefs) {
+        try {
+            val cursor = prefs.messageCursor.takeIf { it.isNotBlank() }
+            val messages = client.getMessages(cursor)
+            if (messages.length() == 0) return
+            var newest = cursor
+            for (index in 0 until messages.length()) {
+                val message = messages.getJSONObject(index)
+                prefs.addMessage(message)
+                val from = message.optString("from")
+                val label = if (from == "operator") "Operator" else "Device"
+                Notifications.notifyMessage(this, "Message from $label", message.optString("body"))
+                val created = message.optString("created_at")
+                if (created.isNotBlank() && (newest == null || created > newest)) newest = created
+            }
+            if (newest != null) prefs.messageCursor = newest
+        } catch (error: Exception) {
+            android.util.Log.w("PrimalSpace", "message poll failed: ${error.message}")
         }
     }
 
