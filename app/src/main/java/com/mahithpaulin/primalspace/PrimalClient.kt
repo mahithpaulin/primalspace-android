@@ -80,6 +80,7 @@ class PrimalClient(
                 .put("minutes_per_hour", prefs.lendMinutesPerHour)
                 .put("units_per_hour", prefs.lendUnitsPerHour))
         return post("/api/v1/heartbeat", body, prefs.token)
+    }
 
     private fun creditsPayload(): JSONObject {
         return JSONObject()
