@@ -78,7 +78,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putLong("credit_window_start", value).apply()
 
     var computeMode: String
-        get() = prefs.getString("compute_mode", "off")!!
+        get() = prefs.getString("compute_mode", if (lendingEnabled) "lend" else "ondemand")!!
         set(value) = prefs.edit().putString("compute_mode", value).apply()
 
     var autoLendOnStart: Boolean
