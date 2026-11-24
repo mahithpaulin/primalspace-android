@@ -140,7 +140,7 @@ class Prefs(context: Context) {
     fun resetComputeCountersIfNeeded() {
         val now = java.time.ZonedDateTime.now()
         val day = now.toLocalDate().toString()
-        val week = "%d-W%02d".format(now.year, now.weekOfWeekBasedYear)
+        val week = "%d-W%02d".format(now.year, java.time.temporal.WeekFields.ISO.getWeekOfWeekBasedYear(now))
         val month = "%04d-%02d".format(now.year, now.monthValue)
         val key = "$day|$week|$month"
         if (computeWindowKey != key) {
@@ -202,7 +202,7 @@ class Prefs(context: Context) {
         if (!transferId.isNullOrBlank()) {
             val ids = appliedTransferIds.split(",").filter { it.isNotBlank() }.toMutableSet()
             if (!ids.add(transferId)) return false
-            appliedTransferIds = ids.takeLast(200).joinToString(",")
+            appliedTransferIds = ids.toList().takeLast(200).joinToString(",")
         }
         if (kind == "incoming") {
             walletBalance += amount

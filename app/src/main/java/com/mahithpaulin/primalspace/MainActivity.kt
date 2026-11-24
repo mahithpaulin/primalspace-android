@@ -382,7 +382,8 @@ class MainActivity : AppCompatActivity() {
         connect.text = "Reconnect device"
         compute.text = if (prefs.computeEnabled) "Disable compute" else "Enable compute"
         sync.isEnabled = true
-        status.text = "Connected · mode ${prefs.computeMode} · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}""
+        val computeState = if (prefs.computeEnabled) "enabled" else "disabled"
+        status.text = "Connected · mode ${prefs.computeMode} · compute $computeState"
         val stamp = if (prefs.lastSyncAt > 0) {
             SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(prefs.lastSyncAt))
         } else {
