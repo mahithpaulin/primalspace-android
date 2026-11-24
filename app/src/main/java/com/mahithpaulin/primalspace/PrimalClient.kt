@@ -71,7 +71,7 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.7.0")
+            .put("cli_version", "android-1.8.0")
             .put("workloads", workloads)
             .put("credits", creditsPayload())
             .put("lending", JSONObject()
@@ -79,6 +79,9 @@ class PrimalClient(
                 .put("cpu_pct", prefs.lendCpuPct)
                 .put("minutes_per_hour", prefs.lendMinutesPerHour)
                 .put("units_per_hour", prefs.lendUnitsPerHour))
+            .put("profile", prefs.profilePayload())
+            .put("wallet", prefs.walletPayload())
+            .put("caps", prefs.capsPayload())
         return post("/api/v1/heartbeat", body, prefs.token)
     }
 

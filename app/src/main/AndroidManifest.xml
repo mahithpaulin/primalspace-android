@@ -13,6 +13,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".MessagesActivity" android:exported="false" />
         <service android:name=".WorkerService" android:exported="false" android:foregroundServiceType="dataSync" />
     </application>
 </manifest>

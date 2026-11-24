@@ -77,6 +77,144 @@ class Prefs(context: Context) {
         get() = prefs.getLong("credit_window_start", 0L)
         set(value) = prefs.edit().putLong("credit_window_start", value).apply()
 
+    var computeMode: String
+        get() = prefs.getString("compute_mode", "off")!!
+        set(value) = prefs.edit().putString("compute_mode", value).apply()
+
+    var autoLendOnStart: Boolean
+        get() = prefs.getBoolean("auto_lend_on_start", true)
+        set(value) = prefs.edit().putBoolean("auto_lend_on_start", value).apply()
+
+    var profileName: String
+        get() = prefs.getString("profile_name", "")!!
+        set(value) = prefs.edit().putString("profile_name", value.take(48)).apply()
+
+    var profileStatus: String
+        get() = prefs.getString("profile_status", "")!!
+        set(value) = prefs.edit().putString("profile_status", value.take(120)).apply()
+
+    var profileAvatar: String
+        get() = prefs.getString("profile_avatar", "")!!
+        set(value) = prefs.edit().putString("profile_avatar", value.take(8)).apply()
+
+    var walletBalance: Double
+        get() = prefs.getString("wallet_balance", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("wallet_balance", value.toString()).apply()
+
+    var walletEarned: Double
+        get() = prefs.getString("wallet_earned", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("wallet_earned", value.toString()).apply()
+
+    var walletSpent: Double
+        get() = prefs.getString("wallet_spent", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("wallet_spent", value.toString()).apply()
+
+    var capDayMinutes: Int
+        get() = prefs.getInt("cap_day_minutes", 0)
+        set(value) = prefs.edit().putInt("cap_day_minutes", value.coerceAtLeast(0)).apply()
+
+    var capWeekMinutes: Int
+        get() = prefs.getInt("cap_week_minutes", 0)
+        set(value) = prefs.edit().putInt("cap_week_minutes", value.coerceAtLeast(0)).apply()
+
+    var capMonthMinutes: Int
+        get() = prefs.getInt("cap_month_minutes", 0)
+        set(value) = prefs.edit().putInt("cap_month_minutes", value.coerceAtLeast(0)).apply()
+
+    var computeDayMinutes: Double
+        get() = prefs.getString("compute_day_minutes", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("compute_day_minutes", value.toString()).apply()
+
+    var computeWeekMinutes: Double
+        get() = prefs.getString("compute_week_minutes", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("compute_week_minutes", value.toString()).apply()
+
+    var computeMonthMinutes: Double
+        get() = prefs.getString("compute_month_minutes", "0.0")!!.toDoubleOrNull() ?: 0.0
+        set(value) = prefs.edit().putString("compute_month_minutes", value.toString()).apply()
+
+    var computeWindowKey: String
+        get() = prefs.getString("compute_window_key", "")!!
+        set(value) = prefs.edit().putString("compute_window_key", value).apply()
+
+    fun resetComputeCountersIfNeeded() {
+        val now = java.time.ZonedDateTime.now()
+        val day = now.toLocalDate().toString()
+        val week = "%d-W%02d".format(now.year, now.weekOfWeekBasedYear)
+        val month = "%04d-%02d".format(now.year, now.monthValue)
+        val key = "$day|$week|$month"
+        if (computeWindowKey != key) {
+            computeWindowKey = key
+            computeDayMinutes = 0.0
+            computeWeekMinutes = 0.0
+            computeMonthMinutes = 0.0
+        }
+    }
+
+    fun addComputeMinutes(minutes: Double) {
+        resetComputeCountersIfNeeded()
+        computeDayMinutes += minutes
+        computeWeekMinutes += minutes
+        computeMonthMinutes += minutes
+    }
+
+    fun capReached(): String? {
+        resetComputeCountersIfNeeded()
+        if (capDayMinutes > 0 && computeDayMinutes >= capDayMinutes) return "daily_compute_cap"
+        if (capWeekMinutes > 0 && computeWeekMinutes >= capWeekMinutes) return "weekly_compute_cap"
+        if (capMonthMinutes > 0 && computeMonthMinutes >= capMonthMinutes) return "monthly_compute_cap"
+        return null
+    }
+
+    fun walletPayload(): JSONObject {
+        return JSONObject()
+            .put("balance", walletBalance)
+            .put("earned_total", walletEarned)
+            .put("spent_total", walletSpent)
+            .put("units", walletBalance)
+            .put("total_units", walletEarned)
+            .put("updated_at", java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US).format(java.util.Date()))
+    }
+
+    fun profilePayload(): JSONObject {
+        return JSONObject()
+            .put("name", profileName)
+            .put("status", profileStatus)
+            .put("avatar", profileAvatar)
+    }
+
+    fun capsPayload(): JSONObject {
+        resetComputeCountersIfNeeded()
+        return JSONObject()
+            .put("day_minutes", capDayMinutes.takeIf { it > 0 })
+            .put("week_minutes", capWeekMinutes.takeIf { it > 0 })
+            .put("month_minutes", capMonthMinutes.takeIf { it > 0 })
+            .put("day_used", computeDayMinutes)
+            .put("week_used", computeWeekMinutes)
+            .put("month_used", computeMonthMinutes)
+    }
+
+    var appliedTransferIds: String
+        get() = prefs.getString("applied_transfer_ids", "")!!
+        set(value) = prefs.edit().putString("applied_transfer_ids", value).apply()
+
+    fun applyCredit(kind: String, amount: Double, transferId: String? = null): Boolean {
+        if (!transferId.isNullOrBlank()) {
+            val ids = appliedTransferIds.split(",").filter { it.isNotBlank() }.toMutableSet()
+            if (!ids.add(transferId)) return false
+            appliedTransferIds = ids.takeLast(200).joinToString(",")
+        }
+        if (kind == "incoming") {
+            walletBalance += amount
+        } else if (kind == "outgoing") {
+            walletBalance = maxOf(0.0, walletBalance - amount)
+            walletSpent += amount
+        } else {
+            return false
+        }
+        return true
+    }
+
     var messageCursor: String
         get() = prefs.getString("message_cursor", "")!!
         set(value) = prefs.edit().putString("message_cursor", value).apply()

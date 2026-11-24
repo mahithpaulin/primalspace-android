@@ -84,6 +84,12 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.background).setOnClickListener { openBackgroundSettings() }
         messageSend.setOnClickListener { sendMessage() }
         lendingToggle.setOnClickListener { toggleLending() }
+        findViewById<Button>(R.id.open_settings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        findViewById<Button>(R.id.open_messages).setOnClickListener {
+            startActivity(Intent(this, MessagesActivity::class.java))
+        }
 
         setTargets(listOf("All devices" to null))
 
@@ -99,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         } else if (intent?.action == ACTION_COMPUTE_OFF) {
             setCompute(false)
         } else if (prefs.isRegistered()) {
+            applyAutoLend()
             startWorker()
             refreshPeers()
         }
@@ -114,6 +121,17 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         handler.removeCallbacks(ticker)
         super.onPause()
+    }
+
+    private fun applyAutoLend() {
+        if (prefs.computeMode == "lend" && prefs.autoLendOnStart) {
+            if (!prefs.lendingEnabled) {
+                prefs.lendingEnabled = true
+                prefs.computeEnabled = true
+                android.util.Log.i("PrimalSpace", "auto-lend enabled on app open")
+            }
+            startWorker()
+        }
     }
 
     private fun setCompute(enabled: Boolean) {
@@ -309,10 +327,14 @@ class MainActivity : AppCompatActivity() {
         if (lendCpu.text.isNullOrBlank()) lendCpu.setText(prefs.lendCpuPct.toString())
         if (lendMinutes.text.isNullOrBlank()) lendMinutes.setText(prefs.lendMinutesPerHour.toString())
         if (lendUnits.text.isNullOrBlank()) lendUnits.setText(prefs.lendUnitsPerHour.toString())
-        credits.text = "Compute units: %.2f · earned %.2f · %.1f min used this hour".format(
-            prefs.creditUnits,
-            prefs.creditTotalUnits,
+        credits.text = "Wallet: %.3f CU · earned %.3f · %.1f min used this hour\nCompute used today: %.1f min (caps %d/%d/%d)".format(
+            prefs.walletBalance,
+            prefs.walletEarned,
             prefs.creditMinutesUsed,
+            prefs.computeDayMinutes,
+            prefs.capDayMinutes,
+            prefs.capWeekMinutes,
+            prefs.capMonthMinutes,
         )
     }
 
@@ -360,7 +382,7 @@ class MainActivity : AppCompatActivity() {
         connect.text = "Reconnect device"
         compute.text = if (prefs.computeEnabled) "Disable compute" else "Enable compute"
         sync.isEnabled = true
-        status.text = "Connected · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}"
+        status.text = "Connected · mode ${prefs.computeMode} · compute ${if (prefs.computeEnabled) "enabled" else "disabled"}""
         val stamp = if (prefs.lastSyncAt > 0) {
             SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(prefs.lastSyncAt))
         } else {

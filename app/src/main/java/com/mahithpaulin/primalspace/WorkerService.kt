@@ -71,14 +71,28 @@ class WorkerService : android.app.Service() {
                     continue
                 }
                 pollMessages(client, prefs)
+                val cap = prefs.capReached()
+                if (cap != null) {
+                    android.util.Log.i("PrimalSpace", "worker: compute cap reached ($cap)")
+                    client.heartbeat(false, "capped", null, cap)
+                    prefs.lastError = cap
+                    delay(10000)
+                    continue
+                }
+                val computeOn = prefs.computeEnabled && prefs.computeMode != "off"
+                if (!computeOn) {
+                    client.heartbeat(false, "idle")
+                    delay(10000)
+                    continue
+                }
                 if (allowanceReached(prefs)) {
                     android.util.Log.i("PrimalSpace", "worker: lending allowance reached for this hour")
                     delay(5000)
                     continue
                 }
-                val task = client.claim(prefs.computeEnabled)
+                val task = client.claim(true)
                 if (task == null) {
-                    client.applyLendingRequest(client.heartbeat(prefs.computeEnabled, "idle"))
+                    client.applyLendingRequest(client.heartbeat(true, "idle"))
                     android.util.Log.i("PrimalSpace", "worker: heartbeat ok")
                     prefs.lastError = ""
                     prefs.lastSyncAt = System.currentTimeMillis()
@@ -86,7 +100,7 @@ class WorkerService : android.app.Service() {
                     continue
                 }
                 val taskId = task.getString("id")
-                client.applyLendingRequest(client.heartbeat(prefs.computeEnabled, "running", taskId))
+                client.applyLendingRequest(client.heartbeat(true, "running", taskId))
                 val workload = task.optString("workload")
                 if (workload != "http") {
                     client.submitResult(taskId, "failed", null, "unsupported_workload", 0)
@@ -95,12 +109,16 @@ class WorkerService : android.app.Service() {
                 val params = task.getJSONObject("params")
                 val started = System.currentTimeMillis()
                 try {
+                    val cpuStarted = android.os.Process.getElapsedCpuTime()
                     val value = HttpWorkload.execute(params)
                     val elapsed = System.currentTimeMillis() - started
+                    val cpuUsed = (android.os.Process.getElapsedCpuTime() - cpuStarted).toDouble()
                     client.submitResult(taskId, "completed", value, null, elapsed)
-                    accrueUnits(prefs, elapsed)
+                    accrueUnits(prefs, elapsed, cpuUsed)
                 } catch (error: Exception) {
-                    client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", System.currentTimeMillis() - started)
+                    val elapsed = System.currentTimeMillis() - started
+                    client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", elapsed)
+                    consumeAllowance(prefs, elapsed)
                 }
                 prefs.lastError = ""
                 prefs.lastSyncAt = System.currentTimeMillis()
@@ -117,7 +135,7 @@ class WorkerService : android.app.Service() {
                     }
                 } else {
                     try {
-                        client.heartbeat(prefs.computeEnabled, "error", null, message)
+                        client.heartbeat(prefs.computeEnabled && prefs.computeMode != "off", "error", null, message)
                         prefs.lastSyncAt = System.currentTimeMillis()
                     } catch (ignored: Exception) {
                     }
@@ -134,22 +152,31 @@ class WorkerService : android.app.Service() {
         return prefs.creditMinutesUsed >= prefs.lendMinutesPerHour
     }
 
-    private fun accrueUnits(prefs: Prefs, durationMs: Long) {
+    private fun accrueUnits(prefs: Prefs, durationMs: Long, cpuMs: Double) {
         if (!prefs.lendingEnabled) return
+        val minutes = durationMs / 60000.0
+        consumeAllowance(prefs, durationMs)
+        val wallSeconds = durationMs / 1000.0
+        val cpuRatio = if (wallSeconds > 0) (cpuMs / 1000.0 / wallSeconds).coerceIn(0.0, 1.0) else 0.0
+        val earned = (durationMs / 3600000.0) * prefs.lendUnitsPerHour * cpuRatio
+        if (earned > 0.0) {
+            prefs.creditUnits = prefs.creditUnits + earned
+            prefs.creditTotalUnits = prefs.creditTotalUnits + earned
+            prefs.walletBalance = prefs.walletBalance + earned
+            prefs.walletEarned = prefs.walletEarned + earned
+            android.util.Log.i("PrimalSpace", "earned " + earned + " CU (cpu " + cpuRatio + ", balance " + prefs.walletBalance + ")")
+        }
+    }
+
+    private fun consumeAllowance(prefs: Prefs, durationMs: Long) {
         val now = System.currentTimeMillis()
         val window = now - (now % 3600000L)
         if (prefs.creditWindowStart != window) {
             prefs.creditWindowStart = window
             prefs.creditMinutesUsed = 0.0
         }
-        val minutes = durationMs / 60000.0
-        prefs.creditMinutesUsed = minOf(60.0, prefs.creditMinutesUsed + minutes)
-        val earned = (durationMs / 3600000.0) * prefs.lendUnitsPerHour
-        if (earned > 0.0) {
-            prefs.creditUnits = prefs.creditUnits + earned
-            prefs.creditTotalUnits = prefs.creditTotalUnits + earned
-            android.util.Log.i("PrimalSpace", "earned " + earned + " compute units (balance " + prefs.creditUnits + ")")
-        }
+        prefs.creditMinutesUsed = minOf(60.0, prefs.creditMinutesUsed + durationMs / 60000.0)
+        prefs.addComputeMinutes(durationMs / 60000.0)
     }
 
     private fun pollMessages(client: PrimalClient, prefs: Prefs) {
@@ -161,6 +188,15 @@ class WorkerService : android.app.Service() {
             for (index in 0 until messages.length()) {
                 val message = messages.getJSONObject(index)
                 prefs.addMessage(message)
+                val credit = message.optJSONObject("credit")
+                if (credit != null) {
+                    val kind = credit.optString("kind")
+                    val amount = credit.optDouble("amount", 0.0)
+                    val transferId = credit.optString("transfer_id").takeIf { it.isNotBlank() }
+                    if (amount > 0.0 && prefs.applyCredit(kind, amount, transferId)) {
+                        android.util.Log.i("PrimalSpace", "credit " + kind + " " + amount + " CU (balance " + prefs.walletBalance + ")")
+                    }
+                }
                 val from = message.optString("from")
                 val label = if (from == "operator") "Operator" else "Device"
                 Notifications.notifyMessage(this, "Message from $label", message.optString("body"))
