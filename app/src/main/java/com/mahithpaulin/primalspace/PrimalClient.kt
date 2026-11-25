@@ -71,7 +71,7 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.8.0")
+            .put("cli_version", "android-1.9.0")
             .put("workloads", workloads)
             .put("credits", creditsPayload())
             .put("lending", JSONObject()
@@ -82,6 +82,7 @@ class PrimalClient(
             .put("profile", prefs.profilePayload())
             .put("wallet", prefs.walletPayload())
             .put("caps", prefs.capsPayload())
+            .put("agent", prefs.agentPayload())
         return post("/api/v1/heartbeat", body, prefs.token)
     }
 
@@ -140,6 +141,11 @@ class PrimalClient(
         if (!since.isNullOrBlank()) path += "&since=${encode(since)}"
         val response = get(path, prefs.token)
         return response.optJSONArray("messages") ?: org.json.JSONArray()
+    }
+
+    fun getGroups(): org.json.JSONArray {
+        val response = get("/api/v1/groups?device_id=${encode(prefs.deviceId)}", prefs.token)
+        return response.optJSONArray("groups") ?: org.json.JSONArray()
     }
 
     fun sendMessage(to: String?, body: String): JSONObject {

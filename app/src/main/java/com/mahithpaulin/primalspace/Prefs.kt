@@ -217,6 +217,75 @@ class Prefs(context: Context) {
         return true
     }
 
+    var agentName: String
+        get() = prefs.getString("agent_name", "")!!
+        set(value) = prefs.edit().putString("agent_name", value.take(48)).apply()
+
+    var agentModel: String
+        get() = prefs.getString("agent_model", "")!!
+        set(value) = prefs.edit().putString("agent_model", value.take(64)).apply()
+
+    var agentEnabled: Boolean
+        get() = prefs.getBoolean("agent_enabled", false)
+        set(value) = prefs.edit().putBoolean("agent_enabled", value).apply()
+
+    var agentReplyAll: Boolean
+        get() = prefs.getBoolean("agent_reply_all", false)
+        set(value) = prefs.edit().putBoolean("agent_reply_all", value).apply()
+
+    var agentHostId: String
+        get() = prefs.getString("agent_host_id", "")!!
+        set(value) = prefs.edit().putString("agent_host_id", value).apply()
+
+    var agentProcessedIds: String
+        get() = prefs.getString("agent_processed_ids", "")!!
+        set(value) = prefs.edit().putString("agent_processed_ids", value).apply()
+
+    var agentReplies: Int
+        get() = prefs.getInt("agent_replies", 0)
+        set(value) = prefs.edit().putInt("agent_replies", value).apply()
+
+    var agentLastRun: String
+        get() = prefs.getString("agent_last_run", "")!!
+        set(value) = prefs.edit().putString("agent_last_run", value).apply()
+
+    var chatgptClientId: String
+        get() = prefs.getString("chatgpt_client_id", "")!!
+        set(value) = prefs.edit().putString("chatgpt_client_id", value).apply()
+
+    var chatgptAccessToken: String
+        get() = prefs.getString("chatgpt_access_token", "")!!
+        set(value) = prefs.edit().putString("chatgpt_access_token", value).apply()
+
+    var chatgptRefreshToken: String
+        get() = prefs.getString("chatgpt_refresh_token", "")!!
+        set(value) = prefs.edit().putString("chatgpt_refresh_token", value).apply()
+
+    var chatgptIdToken: String
+        get() = prefs.getString("chatgpt_id_token", "")!!
+        set(value) = prefs.edit().putString("chatgpt_id_token", value).apply()
+
+    var chatgptEmail: String
+        get() = prefs.getString("chatgpt_email", "")!!
+        set(value) = prefs.edit().putString("chatgpt_email", value).apply()
+
+    var chatgptScopes: String
+        get() = prefs.getString("chatgpt_scopes", "")!!
+        set(value) = prefs.edit().putString("chatgpt_scopes", value).apply()
+
+    var chatgptExpiresAt: Long
+        get() = prefs.getLong("chatgpt_expires_at", 0L)
+        set(value) = prefs.edit().putLong("chatgpt_expires_at", value).apply()
+
+    fun agentPayload(): JSONObject {
+        return JSONObject()
+            .put("name", agentName.ifBlank { profileName.ifBlank { deviceName } })
+            .put("enabled", agentEnabled || chatgptAccessToken.isNotBlank())
+            .put("model", agentModel)
+            .put("account", chatgptEmail)
+            .put("connected", chatgptAccessToken.isNotBlank())
+    }
+
     var messageCursor: String
         get() = prefs.getString("message_cursor", "")!!
         set(value) = prefs.edit().putString("message_cursor", value).apply()

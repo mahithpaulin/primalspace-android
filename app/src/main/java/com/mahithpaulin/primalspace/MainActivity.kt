@@ -90,6 +90,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.open_messages).setOnClickListener {
             startActivity(Intent(this, MessagesActivity::class.java))
         }
+        findViewById<Button>(R.id.open_agent).setOnClickListener {
+            startActivity(Intent(this, AgentActivity::class.java))
+        }
 
         setTargets(listOf("All devices" to null))
 
