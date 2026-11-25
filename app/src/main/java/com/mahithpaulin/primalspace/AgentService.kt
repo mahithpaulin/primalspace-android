@@ -70,7 +70,7 @@ class AgentService : Service() {
     }
 
     private fun loop() {
-        val client = PrimalClient(this, prefs.serverUrl, prefs)
+        val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
         while (running) {
             try {
                 if (prefs.chatgptAccessToken.isNotBlank() && prefs.isRegistered()) {
@@ -109,7 +109,10 @@ class PrimalAgent(
 
     fun runOnce(): List<String> {
         val groups = client.getGroups()
-        val groupIds = groups.map { it.optString("id") }.toSet()
+        val groupIds = mutableSetOf<String>()
+        for (index in 0 until groups.length()) {
+            groups.optJSONObject(index)?.let { groupIds.add(it.optString("id")) }
+        }
         val messages = client.getMessages(null)
         val seen = processed()
         val replies = mutableListOf<String>()

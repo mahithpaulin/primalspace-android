@@ -125,8 +125,8 @@ object ChatGptOAuth {
                     output.write(response.toByteArray(Charsets.UTF_8))
                     output.flush()
                 }
-            } catch (error: Exception) {
-                error = error.message
+            } catch (failure: Exception) {
+                error = failure.message
             } finally {
                 latch.countDown()
             }
@@ -221,9 +221,7 @@ object ChatGptOAuth {
     }
 
     fun signOut(prefs: Prefs) {
-        prefs.edit().remove("chatgpt_client_id").remove("chatgpt_access_token")
-            .remove("chatgpt_refresh_token").remove("chatgpt_id_token").remove("chatgpt_email")
-            .remove("chatgpt_scopes").remove("chatgpt_expires_at").apply()
+        prefs.clearChatGptSession()
     }
 
     private fun postForm(url: String, fields: Map<String, String>): JSONObject {

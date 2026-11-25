@@ -277,6 +277,18 @@ class Prefs(context: Context) {
         get() = prefs.getLong("chatgpt_expires_at", 0L)
         set(value) = prefs.edit().putLong("chatgpt_expires_at", value).apply()
 
+    fun clearChatGptSession() {
+        prefs.edit()
+            .remove("chatgpt_client_id")
+            .remove("chatgpt_access_token")
+            .remove("chatgpt_refresh_token")
+            .remove("chatgpt_id_token")
+            .remove("chatgpt_email")
+            .remove("chatgpt_scopes")
+            .remove("chatgpt_expires_at")
+            .apply()
+    }
+
     fun agentPayload(): JSONObject {
         return JSONObject()
             .put("name", agentName.ifBlank { profileName.ifBlank { deviceName } })

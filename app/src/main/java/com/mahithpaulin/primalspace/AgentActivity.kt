@@ -110,7 +110,7 @@ class AgentActivity : AppCompatActivity() {
         status.text = lines.joinToString("\n")
         Thread({
             try {
-                val client = PrimalClient(this, prefs.serverUrl, prefs)
+                val client = PrimalClient(this, BuildConfig.PRIMAL_SERVER_URL, prefs)
                 val groupsJson = client.getGroups()
                 val builder = StringBuilder()
                 if (groupsJson.length() == 0) {
