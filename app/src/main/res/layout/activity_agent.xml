@@ -2,142 +2,269 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1210"
-    android:orientation="vertical"
-    android:padding="24dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PRIMAL AGENT"
-        android:textColor="#C9F36B"
-        android:textSize="13sp"
-        android:letterSpacing="0.18"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/agent_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Not signed in with ChatGPT"
-        android:textColor="#9AA59C"
-        android:textSize="12sp" />
-
-    <EditText
-        android:id="@+id/agent_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Agent name"
-        android:inputType="text"
-        android:textColor="#E6EDE7"
-        android:textColorHint="#6E7A71"
-        android:textSize="14sp" />
-
-    <EditText
-        android:id="@+id/agent_model"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Model (blank = account default)"
-        android:inputType="text"
-        android:textColor="#E6EDE7"
-        android:textColorHint="#6E7A71"
-        android:textSize="14sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/agent_login"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Continue with ChatGPT"
-            android:textSize="11sp" />
-
-        <Button
-            android:id="@+id/agent_save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Save"
-            android:textSize="11sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/agent_start"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Start agent"
-            android:textSize="11sp" />
-
-        <Button
-            android:id="@+id/agent_stop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Stop agent"
-            android:textSize="11sp" />
-
-        <Button
-            android:id="@+id/agent_refresh"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Refresh"
-            android:textSize="11sp" />
-
-        <Button
-            android:id="@+id/agent_signout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sign out"
-            android:textSize="11sp" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="GROUP CHATS"
-        android:textColor="#6E7A71"
-        android:textSize="11sp"
-        android:letterSpacing="0.14"
-        android:textStyle="bold" />
+    android:background="@color/agent_ink"
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
         android:fillViewport="true">
-        <TextView
-            android:id="@+id/agent_groups"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="No group chats yet."
-            android:textColor="#9AA59C"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.2"
+                android:text="AGENT SPACE"
+                android:textColor="@color/agent_violet"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Primal agent"
+                android:textColor="#F1EDFF"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="A local voice for your group chats, powered by your ChatGPT account."
+                android:textColor="@color/agent_muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_agent_hero"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="CHATGPT LINK"
+                    android:textColor="@color/agent_violet"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/agent_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Not signed in with ChatGPT"
+                    android:textColor="#D8D0F5"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/agent_login"
+                        android:layout_width="0dp"
+                        android:layout_height="46dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="@color/agent_violet"
+                        android:text="Continue with ChatGPT"
+                        android:textAllCaps="false"
+                        android:textColor="#0B0914"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/agent_signout"
+                        android:layout_width="0dp"
+                        android:layout_height="46dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="#2C2550"
+                        android:text="Sign out"
+                        android:textAllCaps="false"
+                        android:textColor="@color/agent_violet"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_agent"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="IDENTITY"
+                    android:textColor="@color/agent_violet"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/agent_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_input_agent"
+                    android:hint="Agent name"
+                    android:inputType="text"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="#F1EDFF"
+                    android:textColorHint="#6F668F"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/agent_model"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_agent"
+                    android:hint="Model (blank = account default)"
+                    android:inputType="text"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="#F1EDFF"
+                    android:textColorHint="#6F668F"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/agent_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="#2C2550"
+                    android:text="Save identity"
+                    android:textAllCaps="false"
+                    android:textColor="@color/agent_violet"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_agent"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="AGENT CONTROL"
+                    android:textColor="@color/agent_violet"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/agent_start"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="@color/agent_violet"
+                        android:text="Start"
+                        android:textAllCaps="false"
+                        android:textColor="#0B0914"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/agent_stop"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginHorizontal="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="#2C2550"
+                        android:text="Stop"
+                        android:textAllCaps="false"
+                        android:textColor="@color/agent_violet"
+                        android:textSize="12sp" />
+
+                    <Button
+                        android:id="@+id/agent_refresh"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="#2C2550"
+                        android:text="Refresh"
+                        android:textAllCaps="false"
+                        android:textColor="@color/agent_violet"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_agent"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="GROUP CHATS"
+                    android:textColor="@color/agent_violet"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/agent_groups"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="No group chats yet."
+                    android:textColor="@color/agent_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="The agent listens only to groups you belong to."
+                android:textColor="#514A6B"
+                android:textSize="10sp" />
+        </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/close_agent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Close"
-        android:textSize="11sp" />
+    <include layout="@layout/nav_bar" />
 </LinearLayout>

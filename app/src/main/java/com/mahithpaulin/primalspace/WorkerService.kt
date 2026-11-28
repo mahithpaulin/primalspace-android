@@ -12,6 +12,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.File
+import org.json.JSONObject
 
 class WorkerService : android.app.Service() {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -87,12 +89,17 @@ class WorkerService : android.app.Service() {
                 }
                 if (allowanceReached(prefs)) {
                     android.util.Log.i("PrimalSpace", "worker: lending allowance reached for this hour")
+                    val heartbeat = client.heartbeat(true, "capped", null, "lending_hourly_limit")
+                    client.applyLendingRequest(heartbeat)
+                    client.applyServerWallet(heartbeat)
                     delay(5000)
                     continue
                 }
                 val task = client.claim(true)
                 if (task == null) {
-                    client.applyLendingRequest(client.heartbeat(true, "idle"))
+                    val heartbeat = client.heartbeat(true, "idle")
+                    client.applyLendingRequest(heartbeat)
+                    client.applyServerWallet(heartbeat)
                     android.util.Log.i("PrimalSpace", "worker: heartbeat ok")
                     prefs.lastError = ""
                     prefs.lastSyncAt = System.currentTimeMillis()
@@ -100,24 +107,39 @@ class WorkerService : android.app.Service() {
                     continue
                 }
                 val taskId = task.getString("id")
-                client.applyLendingRequest(client.heartbeat(true, "running", taskId))
+                val heartbeat = client.heartbeat(true, "running", taskId)
+                client.applyLendingRequest(heartbeat)
+                client.applyServerWallet(heartbeat)
+                val executing = client.markExecuting(taskId).optJSONObject("task")
+                if (executing?.optString("status") != "executing") continue
                 val workload = task.optString("workload")
-                if (workload != "http") {
-                    client.submitResult(taskId, "failed", null, "unsupported_workload", 0)
-                    continue
-                }
                 val params = task.getJSONObject("params")
                 val started = System.currentTimeMillis()
                 try {
                     val cpuStarted = android.os.Process.getElapsedCpuTime()
-                    val value = HttpWorkload.execute(params)
+                    val value = when (workload) {
+                        "http" -> HttpWorkload.execute(params)
+                        "shell" -> ShellWorkload.execute(
+                            params,
+                            task.optJSONObject("resource_limits")?.optInt("max_seconds", 10) ?: 10,
+                            File(cacheDir, "workloads"),
+                        )
+                        else -> throw IllegalArgumentException("unsupported_workload")
+                    }
                     val elapsed = System.currentTimeMillis() - started
                     val cpuUsed = (android.os.Process.getElapsedCpuTime() - cpuStarted).toDouble()
-                    client.submitResult(taskId, "completed", value, null, elapsed)
+                    val cpuPct = if (elapsed > 0) cpuUsed / elapsed.toDouble() * 100.0 else 0.0
+                    val metrics = JSONObject()
+                        .put("worker_cpu_pct_avg", cpuPct.coerceIn(0.0, 100.0))
+                        .put("cpu_load_pct", 0.0)
+                    client.submitResult(taskId, "completed", value, null, elapsed, metrics)
                     accrueUnits(prefs, elapsed, cpuUsed)
                 } catch (error: Exception) {
                     val elapsed = System.currentTimeMillis() - started
-                    client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", elapsed)
+                    val metrics = JSONObject()
+                        .put("worker_cpu_pct_avg", 0.0)
+                        .put("cpu_load_pct", 0.0)
+                    client.submitResult(taskId, "failed", null, error.message ?: "execution_failed", elapsed, metrics)
                     consumeAllowance(prefs, elapsed)
                 }
                 prefs.lastError = ""
@@ -158,7 +180,9 @@ class WorkerService : android.app.Service() {
         consumeAllowance(prefs, durationMs)
         val wallSeconds = durationMs / 1000.0
         val cpuRatio = if (wallSeconds > 0) (cpuMs / 1000.0 / wallSeconds).coerceIn(0.0, 1.0) else 0.0
-        val earned = (durationMs / 3600000.0) * prefs.lendUnitsPerHour * cpuRatio
+        val promisedCpu = prefs.lendCpuPct.coerceIn(1, 100) / 100.0
+        val cpuFactor = (cpuRatio / promisedCpu).coerceIn(0.0, 1.0)
+        val earned = (durationMs / 3600000.0) * prefs.lendUnitsPerHour * cpuFactor
         if (earned > 0.0) {
             prefs.creditUnits = prefs.creditUnits + earned
             prefs.creditTotalUnits = prefs.creditTotalUnits + earned

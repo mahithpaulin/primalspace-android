@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="62dp"
+    android:background="@drawable/bg_nav_bar"
+    android:elevation="12dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="4dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <LinearLayout
+        android:id="@+id/nav_home"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_home_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Home"
+            android:src="@drawable/ic_nav_home"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_home_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Home"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_compute"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_compute_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Compute"
+            android:src="@drawable/ic_nav_compute"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_compute_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Compute"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_work"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_work_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Work"
+            android:src="@drawable/ic_nav_work"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_work_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Work"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_messages"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_messages_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Messages"
+            android:src="@drawable/ic_nav_messages"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_messages_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Chats"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_agent"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_agent_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Agent"
+            android:src="@drawable/ic_nav_agent"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_agent_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Agent"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_settings"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/nav_settings_icon"
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:contentDescription="Settings"
+            android:src="@drawable/ic_nav_settings"
+            android:tint="@color/primal_muted" />
+
+        <TextView
+            android:id="@+id/nav_settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Settings"
+            android:textColor="@color/primal_muted"
+            android:textSize="9sp" />
+    </LinearLayout>
+</LinearLayout>

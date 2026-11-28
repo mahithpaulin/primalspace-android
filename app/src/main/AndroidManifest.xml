@@ -14,7 +14,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SettingsActivity" android:exported="false" />
-        <activity android:name=".MessagesActivity" android:exported="false" />
+        <activity android:name=".MessagesActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ComputeActivity" android:exported="false" />
+        <activity android:name=".JobsActivity" android:exported="false" />
         <activity android:name=".AgentActivity" android:exported="false" />
         <service android:name=".WorkerService" android:exported="false" android:foregroundServiceType="dataSync" />
         <service android:name=".AgentService" android:exported="false" android:foregroundServiceType="dataSync" />

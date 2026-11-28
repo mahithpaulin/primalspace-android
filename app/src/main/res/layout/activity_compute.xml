@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/compute_ink"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.2"
+                android:text="COMPUTE"
+                android:textColor="@color/compute_teal"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Lending plan"
+                android:textColor="#E8F6F2"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Hour and wallet are server-settled. Day, week and month show local cap use."
+                android:textColor="@color/compute_muted"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_compute_hero"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:letterSpacing="0.16"
+                        android:text="LENDING ENGINE"
+                        android:textColor="@color/compute_teal"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#173A3A"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="PAUSED"
+                        android:textColor="@color/compute_teal"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/compute_status_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Not lending"
+                    android:textColor="#E8F6F2"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/compute_status_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Turn on compute to accept work."
+                    android:textColor="@color/compute_muted"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/mode_off"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#143039"
+                        android:gravity="center"
+                        android:text="Off"
+                        android:textColor="#A8C8C7"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/mode_ondemand"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#143039"
+                        android:gravity="center"
+                        android:text="On demand"
+                        android:textColor="#A8C8C7"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/mode_lend"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="@color/compute_teal"
+                        android:gravity="center"
+                        android:text="Lend"
+                        android:textColor="#07131A"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/compute_toggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="@color/compute_teal"
+                    android:text="Start compute"
+                    android:textAllCaps="false"
+                    android:textColor="#07131A"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/compute_auto_lend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Start lending when the app opens"
+                    android:textColor="@color/compute_muted"
+                    android:textSize="12sp"
+                    android:thumbTint="@color/compute_teal"
+                    android:trackTint="#2A4A4A" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:letterSpacing="0.16"
+                android:text="CAPS &amp; USAGE"
+                android:textColor="@color/compute_muted"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="HOUR CREDITED"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_hour_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.0 / 30 min"
+                        android:textColor="#E8F6F2"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/compute_hour_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="9dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="#153039"
+                        android:progressTint="@color/compute_teal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="LIFETIME LANDED"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_landed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.000 CU"
+                        android:textColor="@color/compute_teal"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="server settled"
+                        android:textColor="#5E7D82"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="TODAY"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_day_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.0 min"
+                        android:textColor="#E8F6F2"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/compute_day_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="9dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="#153039"
+                        android:progressTint="@color/compute_teal" />
+
+                    <TextView
+                        android:id="@+id/compute_day_cap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="No daily cap"
+                        android:textColor="#5E7D82"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="THIS WEEK"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_week_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.0 min"
+                        android:textColor="#E8F6F2"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/compute_week_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="9dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="#153039"
+                        android:progressTint="@color/compute_teal" />
+
+                    <TextView
+                        android:id="@+id/compute_week_cap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="No weekly cap"
+                        android:textColor="#5E7D82"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="THIS MONTH"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_month_used"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.0 min"
+                        android:textColor="#E8F6F2"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ProgressBar
+                        android:id="@+id/compute_month_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_marginTop="9dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="#153039"
+                        android:progressTint="@color/compute_teal" />
+
+                    <TextView
+                        android:id="@+id/compute_month_cap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="No monthly cap"
+                        android:textColor="#5E7D82"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_compute_stat"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.12"
+                        android:text="WALLET"
+                        android:textColor="@color/compute_muted"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="0.000 CU"
+                        android:textColor="#E8F6F2"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/compute_earned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Earned 0.000 CU"
+                        android:textColor="#5E7D82"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_compute"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="PLAN"
+                    android:textColor="@color/compute_teal"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="CPU share"
+                        android:textColor="#E8F6F2"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/lend_cpu_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="20%"
+                        android:textColor="@color/compute_teal"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/lend_cpu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:max="99"
+                    android:progress="19"
+                    android:progressTint="@color/compute_teal"
+                    android:thumbTint="@color/compute_teal" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Minutes per hour"
+                        android:textColor="#E8F6F2"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/lend_minutes_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30 min"
+                        android:textColor="@color/compute_teal"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/lend_minutes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:max="60"
+                    android:progress="30"
+                    android:progressTint="@color/compute_teal"
+                    android:thumbTint="@color/compute_teal" />
+
+                <EditText
+                    android:id="@+id/lend_units"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_input_compute"
+                    android:hint="CU per hour of compute"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="#E8F6F2"
+                    android:textColorHint="#5E7D82"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Maximum compute (minutes, 0 = unlimited)"
+                    android:textColor="@color/compute_muted"
+                    android:textSize="11sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/cap_day"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_compute"
+                        android:hint="Day"
+                        android:inputType="number"
+                        android:paddingHorizontal="10dp"
+                        android:textColor="#E8F6F2"
+                        android:textColorHint="#5E7D82"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/cap_week"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginHorizontal="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_compute"
+                        android:hint="Week"
+                        android:inputType="number"
+                        android:paddingHorizontal="10dp"
+                        android:textColor="#E8F6F2"
+                        android:textColorHint="#5E7D82"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/cap_month"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input_compute"
+                        android:hint="Month"
+                        android:inputType="number"
+                        android:paddingHorizontal="10dp"
+                        android:textColor="#E8F6F2"
+                        android:textColorHint="#5E7D82"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/compute_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="@color/compute_teal"
+                    android:text="Save plan"
+                    android:textAllCaps="false"
+                    android:textColor="#07131A"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_card_compute"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="NODE"
+                    android:textColor="@color/compute_teal"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/compute_last_sync"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Last settled: never"
+                    android:textColor="@color/compute_muted"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/compute_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="#143039"
+                    android:text="Refresh settlement"
+                    android:textAllCaps="false"
+                    android:textColor="@color/compute_teal"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/compute_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="#143039"
+                    android:text="Allow background running"
+                    android:textAllCaps="false"
+                    android:textColor="@color/compute_teal"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="Hourly credits and wallet settle with the monitor. Caps are tracked on this device."
+                android:textColor="#45636A"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/nav_bar" />
+</LinearLayout>

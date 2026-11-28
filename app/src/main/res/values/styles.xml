@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:colorBackground">#0E1210</item>
-        <item name="android:textColor">#F4F6F1</item>
-        <item name="android:statusBarColor">#0E1210</item>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:colorBackground">@color/primal_ink</item>
+        <item name="android:textColor">@color/primal_text</item>
+        <item name="android:statusBarColor">@color/primal_ink</item>
+        <item name="android:navigationBarColor">#080C0A</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorAccent">@color/primal_lime</item>
     </style>
 </resources>

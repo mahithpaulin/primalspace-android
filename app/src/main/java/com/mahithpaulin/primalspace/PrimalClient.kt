@@ -13,9 +13,9 @@ class PrimalClient(
     private val prefs: Prefs,
 ) {
     private val base = serverUrl.trimEnd('/')
-    private val workloads = org.json.JSONArray().put("http")
+    private val workloads = org.json.JSONArray().put("http").put("shell")
 
-    fun enroll(): Triple<String, String, String> {
+    fun enroll(enrollmentKey: String): Pair<String, String> {
         val device = JSONObject()
             .put("name", prefs.deviceName)
             .put("manufacturer", android.os.Build.MANUFACTURER)
@@ -27,20 +27,17 @@ class PrimalClient(
         val body = JSONObject()
             .put("install_id", prefs.installId)
             .put("device", device)
+            .put("enrollment_key", enrollmentKey)
         val response = post("/api/v1/enroll", body, null)
-        return Triple(
-            response.getString("device_id"),
-            response.getString("token"),
-            response.getString("enrollment_key"),
-        )
+        return response.getString("device_id") to response.getString("token")
     }
 
     fun enrollIfNeeded(): Boolean {
         if (!prefs.isRegistered()) {
-            val (deviceId, token, enrollmentKey) = enroll()
+            require(prefs.enrollmentKey.isNotBlank()) { "Enrollment key is required" }
+            val (deviceId, token) = enroll(prefs.enrollmentKey)
             prefs.deviceId = deviceId
             prefs.token = token
-            prefs.enrollmentKey = enrollmentKey
             return true
         }
         return false
@@ -71,7 +68,7 @@ class PrimalClient(
             .put("device_id", prefs.deviceId)
             .put("metrics", metrics)
             .put("worker", worker)
-            .put("cli_version", "android-1.9.0")
+            .put("cli_version", "android-1.11.0")
             .put("workloads", workloads)
             .put("credits", creditsPayload())
             .put("lending", JSONObject()
@@ -109,6 +106,28 @@ class PrimalClient(
         }
     }
 
+    fun applyServerWallet(response: JSONObject) {
+        response.optJSONObject("wallet")?.let { wallet ->
+            prefs.walletBalance = wallet.optDouble("balance", prefs.walletBalance)
+            prefs.walletEarned = wallet.optDouble("earned_total", prefs.walletEarned)
+            prefs.walletSpent = wallet.optDouble("spent_total", prefs.walletSpent)
+        }
+        response.optJSONObject("credits")?.let { credits ->
+            prefs.creditUnits = credits.optDouble("units", prefs.creditUnits)
+            prefs.creditTotalUnits = credits.optDouble("total_units", prefs.creditTotalUnits)
+            val window = credits.optString("window_start")
+            if (window.isBlank()) {
+                prefs.creditWindowStart = 0L
+                prefs.creditMinutesUsed = 0.0
+            } else {
+                runCatching { java.time.Instant.parse(window).toEpochMilli() }.getOrNull()?.let { epoch ->
+                    prefs.creditWindowStart = epoch - (epoch % 3600000L)
+                    prefs.creditMinutesUsed = credits.optDouble("minutes_used", prefs.creditMinutesUsed)
+                }
+            }
+        }
+    }
+
     fun claim(computeEnabled: Boolean): JSONObject? {
         val body = JSONObject()
             .put("device_id", prefs.deviceId)
@@ -118,7 +137,21 @@ class PrimalClient(
         return response.optJSONObject("task")
     }
 
-    fun submitResult(taskId: String, status: String, value: Any?, error: String? = null, durationMs: Long): JSONObject {
+    fun markExecuting(taskId: String): JSONObject {
+        val body = JSONObject()
+            .put("device_id", prefs.deviceId)
+            .put("task_id", taskId)
+        return post("/api/v1/tasks/executing", body, prefs.token)
+    }
+
+    fun submitResult(
+        taskId: String,
+        status: String,
+        value: Any?,
+        error: String? = null,
+        durationMs: Long,
+        metrics: JSONObject? = null,
+    ): JSONObject {
         val result = JSONObject()
         if (value != null) result.put("value", value)
         val body = JSONObject()
@@ -128,7 +161,13 @@ class PrimalClient(
             .put("duration_ms", durationMs)
             .put("result", result)
         if (error != null) body.put("error", error)
+        if (metrics != null) body.put("metrics", metrics)
         return post("/api/v1/tasks/result", body, prefs.token)
+    }
+
+    fun getHistory(limit: Int = 50): JSONObject {
+        val path = "/api/v1/history?device_id=${encode(prefs.deviceId)}&limit=$limit"
+        return get(path, prefs.token)
     }
 
     fun getPeers(): org.json.JSONArray {
@@ -136,8 +175,8 @@ class PrimalClient(
         return response.optJSONArray("peers") ?: org.json.JSONArray()
     }
 
-    fun getMessages(since: String?): org.json.JSONArray {
-        var path = "/api/v1/messages?device_id=${encode(prefs.deviceId)}"
+    fun getMessages(since: String?, limit: Int = 50): org.json.JSONArray {
+        var path = "/api/v1/messages?device_id=${encode(prefs.deviceId)}&limit=${limit.coerceIn(1, 100)}"
         if (!since.isNullOrBlank()) path += "&since=${encode(since)}"
         val response = get(path, prefs.token)
         return response.optJSONArray("messages") ?: org.json.JSONArray()
@@ -146,6 +185,17 @@ class PrimalClient(
     fun getGroups(): org.json.JSONArray {
         val response = get("/api/v1/groups?device_id=${encode(prefs.deviceId)}", prefs.token)
         return response.optJSONArray("groups") ?: org.json.JSONArray()
+    }
+
+    fun createGroup(name: String, memberIds: List<String>): JSONObject {
+        val members = org.json.JSONArray()
+        memberIds.forEach { members.put(it) }
+        val body = JSONObject()
+            .put("device_id", prefs.deviceId)
+            .put("name", name)
+            .put("members", members)
+            .put("topic", "chat")
+        return post("/api/v1/groups", body, prefs.token).optJSONObject("group") ?: JSONObject()
     }
 
     fun sendMessage(to: String?, body: String): JSONObject {

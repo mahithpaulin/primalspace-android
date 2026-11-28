@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primal_lime">#C9F36B</color>
+    <color name="primal_ink">#0B0F0D</color>
+    <color name="primal_panel">#121A15</color>
+    <color name="primal_stroke">#243228</color>
+    <color name="primal_text">#F2F6EF</color>
+    <color name="primal_muted">#8B9A8F</color>
+
+    <color name="compute_teal">#5FE3C0</color>
+    <color name="compute_ink">#07131A</color>
+    <color name="compute_panel">#0C1A21</color>
+    <color name="compute_stroke">#1D333B</color>
+    <color name="compute_muted">#7E9AA3</color>
+
+    <color name="work_amber">#FFB86B</color>
+    <color name="work_ink">#0F0C08</color>
+    <color name="work_panel">#1A1712</color>
+    <color name="work_stroke">#3A3025</color>
+    <color name="work_muted">#B39B7E</color>
+
+    <color name="msg_bg">#0B141A</color>
+    <color name="msg_header">#111B21</color>
+    <color name="msg_panel">#202C33</color>
+    <color name="msg_out">#005C4B</color>
+    <color name="msg_green">#25D366</color>
+    <color name="msg_muted">#8696A0</color>
+    <color name="msg_text">#E9EDEF</color>
+
+    <color name="agent_violet">#B69CFF</color>
+    <color name="agent_ink">#0B0914</color>
+    <color name="agent_panel">#141126</color>
+    <color name="agent_stroke">#2C2550</color>
+    <color name="agent_muted">#9186B8</color>
+
+    <color name="settings_ink">#0D1012</color>
+    <color name="settings_panel">#151A1D</color>
+    <color name="settings_stroke">#2A3237</color>
+    <color name="settings_muted">#95A1A8</color>
+</resources>

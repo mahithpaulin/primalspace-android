@@ -1,6 +1,7 @@
 package com.mahithpaulin.primalspace
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -23,6 +24,7 @@ class AgentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_agent)
+        Ui.paintSystemBars(this, Color.rgb(11, 9, 20))
         prefs = Prefs(this)
         status = findViewById(R.id.agent_status)
         groups = findViewById(R.id.agent_groups)
@@ -37,7 +39,7 @@ class AgentActivity : AppCompatActivity() {
         findViewById<Button>(R.id.agent_start).setOnClickListener { startAgent() }
         findViewById<Button>(R.id.agent_stop).setOnClickListener { stopAgent() }
         findViewById<Button>(R.id.agent_refresh).setOnClickListener { refresh() }
-        findViewById<Button>(R.id.close_agent).setOnClickListener { finish() }
+        AppNavigation.bind(this, "AgentActivity")
     }
 
     override fun onResume() {

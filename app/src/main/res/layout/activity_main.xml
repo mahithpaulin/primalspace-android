@@ -1,217 +1,562 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0E1210"
-    android:fillViewport="true">
-    <LinearLayout
+    android:background="@color/primal_ink"
+    android:orientation="vertical">
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="28dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PRIMALSPACE"
-            android:textColor="#C9F36B"
-            android:textSize="13sp"
-            android:letterSpacing="0.18"
-            android:textStyle="bold" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Your device, working together."
-            android:textColor="#F4F6F1"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/status"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Not connected"
-            android:textColor="#9AA59C"
-            android:textSize="14sp" />
-        <TextView
-            android:id="@+id/detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text=""
-            android:textColor="#6E7A71"
-            android:textSize="12sp" />
-        <Button
-            android:id="@+id/connect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="Connect to PrimalSpace"
-            android:backgroundTint="#C9F36B"
-            android:textColor="#0E1210" />
-        <Button
-            android:id="@+id/compute"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Enable compute"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <Button
-            android:id="@+id/sync"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Sync now"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <Button
-            android:id="@+id/background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Allow background running"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <Button
-            android:id="@+id/open_settings"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Settings · modes, caps, profile"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <Button
-            android:id="@+id/open_messages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Messages · conversations"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <Button
-            android:id="@+id/open_agent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Primal agent · sign in with ChatGPT"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="ACTIVE COMPUTE"
-            android:textColor="#C9F36B"
-            android:textSize="13sp"
-            android:letterSpacing="0.18"
-            android:textStyle="bold" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Lend a slice of this device. One hour of compute lent earns one compute unit, stored on this phone."
-            android:textColor="#6E7A71"
-            android:textSize="12sp" />
-        <EditText
-            android:id="@+id/lend_cpu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#3A463D"
-            android:hint="CPU to lend (%)"
-            android:inputType="number"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#6E7A71"
-            android:textSize="14sp" />
-        <EditText
-            android:id="@+id/lend_minutes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#3A463D"
-            android:hint="Minutes per hour to lend"
-            android:inputType="number"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#6E7A71"
-            android:textSize="14sp" />
-        <EditText
-            android:id="@+id/lend_units"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#3A463D"
-            android:hint="Units per hour (default 1)"
-            android:inputType="numberDecimal"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#6E7A71"
-            android:textSize="14sp" />
-        <Button
-            android:id="@+id/lending_toggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Start lending compute"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <TextView
-            android:id="@+id/credits"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Compute units: 0.00 · earned 0.00"
-            android:textColor="#9AA59C"
-            android:textSize="13sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="MESSAGES"
-            android:textColor="#C9F36B"
-            android:textSize="13sp"
-            android:letterSpacing="0.18"
-            android:textStyle="bold" />
-        <Spinner
-            android:id="@+id/message_target"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#C9F36B"
-            android:spinnerMode="dropdown" />
-        <EditText
-            android:id="@+id/message_body"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="#3A463D"
-            android:hint="Message"
-            android:textColor="#F4F6F1"
-            android:textColorHint="#6E7A71"
-            android:textSize="14sp"
-            android:inputType="text"
-            android:maxLines="4" />
-        <Button
-            android:id="@+id/message_send"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Send message"
-            android:backgroundTint="#1C241F"
-            android:textColor="#F4F6F1" />
-        <TextView
-            android:id="@+id/messages"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text=""
-            android:textColor="#9AA59C"
-            android:textSize="12sp" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="Compute is off by default. Enable it only when you want this device to accept work. The worker runs as a foreground service so Android keeps it alive. You can disable it at any time."
-            android:textColor="#6E7A71"
-            android:textSize="12sp" />
-    </LinearLayout>
-</ScrollView>
+            android:orientation="vertical"
+            android:paddingHorizontal="18dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.2"
+                        android:text="PRIMALSPACE"
+                        android:textColor="@color/primal_lime"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/home_greeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Your node, in the wild."
+                        android:textColor="@color/primal_text"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/home_avatar"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/bg_avatar_primal"
+                    android:gravity="center"
+                    android:text="PS"
+                    android:textColor="#0B0F0D"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_home_hero"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/home_status_dot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_online_dot" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:letterSpacing="0.16"
+                        android:text="NODE STATUS"
+                        android:textColor="@color/primal_lime"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/home_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#263A2B"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="IDLE"
+                        android:textColor="@color/primal_lime"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Not connected"
+                    android:textColor="@color/primal_text"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Enter the enrollment key to join the network."
+                    android:textColor="@color/primal_muted"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#1D2E22"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp"
+                        android:text="HTTP"
+                        android:textColor="#BBD3A4"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#1D2E22"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp"
+                        android:text="SHELL"
+                        android:textColor="#BBD3A4"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.12"
+                            android:text="BALANCE"
+                            android:textColor="@color/primal_muted"
+                            android:textSize="9sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/home_balance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="0.000 CU"
+                            android:textColor="@color/primal_text"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.12"
+                            android:text="EARNED"
+                            android:textColor="@color/primal_muted"
+                            android:textSize="9sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/home_earned"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="0.000 CU"
+                            android:textColor="@color/primal_lime"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/connect_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_card_home"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:text="JOIN THE NETWORK"
+                    android:textColor="@color/primal_lime"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Connect this device"
+                    android:textColor="@color/primal_text"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Your operator enrollment key keeps the network private."
+                    android:textColor="@color/primal_muted"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/enrollment_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_input_dark"
+                    android:hint="Enrollment key"
+                    android:inputType="textPassword"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="@color/primal_text"
+                    android:textColorHint="#65756A"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/connect"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button"
+                    android:backgroundTint="@color/primal_lime"
+                    android:text="Connect to PrimalSpace"
+                    android:textAllCaps="false"
+                    android:textColor="#0B0F0D"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:letterSpacing="0.16"
+                android:text="QUICK ACTIONS"
+                android:textColor="@color/primal_muted"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/home_compute"
+                    android:layout_width="0dp"
+                    android:layout_height="118dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_quick_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_quick_icon"
+                        android:backgroundTint="#17342D">
+
+                        <ImageView
+                            android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Compute"
+                            android:src="@drawable/ic_nav_compute"
+                            android:tint="@color/compute_teal" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Compute plan"
+                        android:textColor="@color/primal_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Lend and track"
+                        android:textColor="@color/primal_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_messages"
+                    android:layout_width="0dp"
+                    android:layout_height="118dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_quick_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_quick_icon"
+                        android:backgroundTint="#143529">
+
+                        <ImageView
+                            android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Messages"
+                            android:src="@drawable/ic_nav_messages"
+                            android:tint="@color/msg_green" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Messages"
+                        android:textColor="@color/primal_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Community chats"
+                        android:textColor="@color/primal_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/home_work"
+                    android:layout_width="0dp"
+                    android:layout_height="118dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_quick_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_quick_icon"
+                        android:backgroundTint="#3A2C1A">
+
+                        <ImageView
+                            android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Work"
+                            android:src="@drawable/ic_nav_work"
+                            android:tint="@color/work_amber" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Work history"
+                        android:textColor="@color/primal_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Jobs and tasks"
+                        android:textColor="@color/primal_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_agent"
+                    android:layout_width="0dp"
+                    android:layout_height="118dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_quick_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <FrameLayout
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_quick_icon"
+                        android:backgroundTint="#2B2350">
+
+                        <ImageView
+                            android:layout_width="19dp"
+                            android:layout_height="19dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Agent"
+                            android:src="@drawable/ic_nav_agent"
+                            android:tint="@color/agent_violet" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Agent space"
+                        android:textColor="@color/primal_text"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Primal agent"
+                        android:textColor="@color/primal_muted"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_card_home"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:letterSpacing="0.16"
+                        android:text="DEVICE WALLET"
+                        android:textColor="@color/primal_lime"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/sync"
+                        android:layout_width="wrap_content"
+                        android:layout_height="34dp"
+                        android:background="@drawable/bg_button"
+                        android:backgroundTint="#1D2E22"
+                        android:minWidth="0dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Sync"
+                        android:textAllCaps="false"
+                        android:textColor="@color/primal_lime"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/credits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Wallet: 0.00 CU · earned 0.00"
+                    android:textColor="@color/primal_muted"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/home_minutes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="No compute credited yet."
+                    android:textColor="#65756A"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:text="Compute is opt-in. Your node, your terms."
+                android:textColor="#4F5E54"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/nav_bar" />
+</LinearLayout>

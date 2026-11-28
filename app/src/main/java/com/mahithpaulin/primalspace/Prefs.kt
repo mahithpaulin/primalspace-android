@@ -315,8 +315,14 @@ class Prefs(context: Context) {
 
     fun addMessage(message: JSONObject) {
         val existing = inbox()
+        val id = message.optString("id")
+        if (id.isNotBlank()) {
+            for (index in 0 until existing.length()) {
+                if (existing.optJSONObject(index)?.optString("id") == id) return
+            }
+        }
         val trimmed = JSONArray()
-        val start = maxOf(0, existing.length() - 29)
+        val start = maxOf(0, existing.length() - 199)
         for (index in start until existing.length()) {
             trimmed.put(existing.get(index))
         }
